@@ -1,0 +1,193 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------
+   Portail des Distinctions Nationales — République Gabonaise
+   Design tokens institutionnels (Tailwind v4)
+------------------------------------------------------------------ */
+@theme {
+  /* Typographie */
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Sora", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Lora", ui-serif, Georgia, "Times New Roman", serif;
+
+  /* Bleu institutionnel profond */
+  --color-ink-50: #f4f7fb;
+  --color-ink-100: #e7edf6;
+  --color-ink-200: #c9d8ea;
+  --color-ink-300: #9cb4d3;
+  --color-ink-400: #6b8cb5;
+  --color-ink-500: #426a99;
+  --color-ink-600: #2a527f;
+  --color-ink-700: #1d3f66;
+  --color-ink-800: #163354;
+  --color-ink-900: #102a50;
+  --color-ink-950: #0a1c37;
+
+  /* Vert du drapeau gabonais — actions principales */
+  --color-republic-green-50: #ecf9f3;
+  --color-republic-green-100: #d1f0e1;
+  --color-republic-green-200: #a3e1c4;
+  --color-republic-green-300: #6bcaa1;
+  --color-republic-green-400: #34b180;
+  --color-republic-green-500: #009e60;
+  --color-republic-green-600: #00824f;
+  --color-republic-green-700: #00683f;
+  --color-republic-green-800: #005032;
+  --color-republic-green-900: #003b25;
+
+  /* Jaune doré — détails prestigieux */
+  --color-gold-50: #fffbeb;
+  --color-gold-100: #fff5cc;
+  --color-gold-200: #fdea99;
+  --color-gold-300: #fddb66;
+  --color-gold-400: #fcd116;
+  --color-gold-500: #e9b900;
+  --color-gold-600: #c39600;
+  --color-gold-700: #8f6b09;
+  --color-gold-800: #7a5c08;
+
+  /* Bleu du drapeau gabonais */
+  --color-republic-blue-50: #f2f7fd;
+  --color-republic-blue-100: #e2edfa;
+  --color-republic-blue-200: #c3d9f4;
+  --color-republic-blue-300: #96bcEB;
+  --color-republic-blue-400: #679cd8;
+  --color-republic-blue-500: #3a75c4;
+  --color-republic-blue-600: #2c5da8;
+  --color-republic-blue-700: #244986;
+
+  /* Neutres */
+  --color-canvas: #f8fafc;
+  --color-line: #e5eaf0;
+  --color-line-strong: #d3dbe6;
+  --color-muted: #64748b;
+
+  /* Ombres douces (pas d'excès) */
+  --shadow-card: 0 1px 2px rgba(16, 42, 80, 0.04),
+    0 8px 24px -12px rgba(16, 42, 80, 0.12);
+  --shadow-raised: 0 2px 4px rgba(16, 42, 80, 0.05),
+    0 18px 40px -18px rgba(16, 42, 80, 0.18);
+
+  /* Animations discrètes */
+  --animate-rise: rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-fade: fade 0.5s ease-out both;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: #ffffff;
+    color: var(--color-ink-900);
+    font-family: var(--font-sans);
+    font-feature-settings: "cv11", "ss01";
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  button,
+  input,
+  textarea,
+  select {
+    font: inherit;
+  }
+
+  ::selection {
+    background-color: var(--color-gold-200);
+    color: var(--color-ink-900);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-republic-green-500);
+    outline-offset: 2px;
+  }
+
+  /* Barre de défilement sobre */
+  * {
+    scrollbar-color: var(--color-line-strong) transparent;
+  }
+}
+
+@utility font-display {
+  font-family: var(--font-display);
+}
+
+@layer components {
+  .medal-object {
+    transform-style: preserve-3d;
+    transition: transform 500ms cubic-bezier(0.22, 1, 0.36, 1), filter 500ms ease;
+  }
+
+  .medal-object:hover {
+    transform: perspective(900px) rotateY(-5deg) rotateX(2deg) translateY(-4px);
+    filter: drop-shadow(0 16px 20px rgba(16, 42, 80, 0.16));
+  }
+}
+
+
+@utility text-balance-tight {
+  text-wrap: balance;
+  letter-spacing: -0.01em;
+}
+
+/* Motif « guipure » très léger pour les fonds institutionnels */
+@utility bg-institution-grid {
+  background-image: linear-gradient(
+      to right,
+      rgba(16, 42, 80, 0.045) 1px,
+      transparent 1px
+    ),
+    linear-gradient(to bottom, rgba(16, 42, 80, 0.045) 1px, transparent 1px);
+  background-size: 44px 44px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

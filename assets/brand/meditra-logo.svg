@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 48" fill="none" role="img" aria-labelledby="md-logo-title md-logo-desc">
+  <title id="md-logo-title">MEDITRA</title>
+  <desc id="md-logo-desc">Médaille et Distinctions du Travail</desc>
+  <g transform="translate(0,0)">
+    <path d="M18 2h4.1v13.2H18z" fill="#009E60"/>
+    <path d="M22.1 2h3.8v13.2h-3.8z" fill="#FCD116"/>
+    <path d="M25.9 2H30v13.2h-4.1z" fill="#3A75C4"/>
+    <path d="M18 15.2 24 19.4 30 15.2v1.2L24 21 18 16.4z" fill="#102A50"/>
+    <circle cx="24" cy="32.2" r="14.6" fill="#102A50"/>
+    <circle cx="24" cy="32.2" r="12.2" stroke="#FCD116" stroke-width="1.5"/>
+    <path d="M15.8 39.2V25.6L24 33.2l8.2-7.6v13.6" stroke="#FCD116" stroke-width="2.15" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <g fill="#102A50">
+    <text x="56" y="22" font-family="Sora, Inter, ui-sans-serif, system-ui, sans-serif" font-size="18" font-weight="700" letter-spacing="0.18em">MEDITRA</text>
+    <text x="56" y="38" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="8.5" font-weight="500" letter-spacing="0.16em" fill="#2A527F">MÉDAILLE ET DISTINCTIONS DU TRAVAIL</text>
+  </g>
+</svg>

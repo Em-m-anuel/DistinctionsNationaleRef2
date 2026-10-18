@@ -1,0 +1,16 @@
+{
+  "name": "distinctions-nationales-html",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Version statique HTML/CSS/JavaScript pur du portail des Distinctions Nationales",
+  "scripts": {
+    "css": "tailwindcss -i css/theme.css -o css/app.css --minify",
+    "css:watch": "tailwindcss -i css/theme.css -o css/app.css --watch",
+    "serve": "python3 -m http.server 8000 --bind 0.0.0.0",
+    "test": "node --test tests/*.cjs"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "4.1.17",
+    "tailwindcss": "4.1.17"
+  }
+}

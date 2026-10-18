@@ -1,0 +1,25 @@
+name: Vérifier le portail statique
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer le dépôt
+        uses: actions/checkout@v4
+      - name: Installer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - name: Installer les outils de génération CSS
+        run: npm ci
+      - name: Vérifier le code et les pages
+        run: npm test
+      - name: Vérifier que le CSS livré est à jour
+        run: |
+          npm run css
+          git diff --exit-code -- css/app.css

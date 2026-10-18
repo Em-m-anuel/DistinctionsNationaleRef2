@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Référence graphique — Distinctions Nationales</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,500;0,600;1,500&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --ink-900: #102a50;
+      --ink-portal: #142d52;
+      --muted: #64748b;
+      --muted-2: #536780;
+      --canvas: #f8fafc;
+      --page: #fcfcfa;
+      --white: #ffffff;
+      --line: #e5eaf0;
+      --line-strong: #d3dbe6;
+      --green: #009e60;
+      --green-ui: #009b62;
+      --green-50: #ecf9f3;
+      --gold: #fcd116;
+      --gold-deep: #d6a72c;
+      --gold-600: #c39600;
+      --blue: #3a75c4;
+      --blue-ui: #315c91;
+      --blue-50: #f2f7fd;
+      --shadow-card: 0 1px 2px rgba(16,42,80,.04), 0 8px 24px -12px rgba(16,42,80,.12);
+      --shadow-raised: 0 2px 4px rgba(16,42,80,.05), 0 18px 40px -18px rgba(16,42,80,.18);
+      --sans: Inter, ui-sans-serif, system-ui, sans-serif;
+      --display: Sora, Inter, sans-serif;
+      --serif: Lora, Georgia, serif;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; font-family: var(--sans); color: var(--ink-portal); background: var(--page); }
+    h1,h2,h3 { font-family: var(--display); letter-spacing: -.03em; }
+    a { color: var(--blue-ui); }
+    .topline { height: 3px; background: linear-gradient(90deg, #009b62 0 33.3%, #d6a72c 33.3% 66.6%, #315c91 66.6%); }
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 32px 24px 80px; }
+    .hero { padding: 28px 0 12px; }
+    .eyebrow { font-size: .64rem; font-weight: 750; letter-spacing: .17em; color: var(--blue-ui); }
+    .hero h1 { font-size: clamp(1.8rem, 3vw, 2.6rem); margin: 8px 0 12px; }
+    .lead { color: var(--muted-2); line-height: 1.7; max-width: 720px; }
+    nav.toc { display: flex; flex-wrap: wrap; gap: 8px; margin: 24px 0 40px; }
+    nav.toc a { font-size: .75rem; font-weight: 650; text-decoration: none; border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px; background: #fff; }
+    section { margin: 48px 0; }
+    section > h2 { font-size: 1.4rem; margin-bottom: 8px; }
+    .note { font-size: .8rem; color: var(--muted-2); line-height: 1.6; margin-bottom: 18px; }
+    .warn { border-left: 3px solid var(--gold-deep); background: #f9f8f4; padding: 10px 14px; border-radius: 0 10px 10px 0; font-size: .78rem; color: #5c4a16; }
+    .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }
+    .swatch { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: #fff; }
+    .swatch i { display: block; height: 52px; }
+    .swatch p { margin: 0; padding: 8px 10px 10px; font-size: .72rem; }
+    .swatch strong { display: block; font-size: .78rem; }
+    .type-sample { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 22px; }
+    .type-sample .sora { font-family: var(--display); font-size: 1.8rem; }
+    .type-sample .lora { font-family: var(--serif); font-size: 1.2rem; font-weight: 500; color: var(--blue-ui); }
+    .type-sample .meta { font-size: .75rem; color: var(--muted); margin-top: 8px; }
+    .row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin: 12px 0; }
+    .btn { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 8px 16px; border-radius: 10px; font-size: .79rem; font-weight: 650; border: 1px solid transparent; cursor: default; }
+    .btn-primary { background: var(--green-ui); color: #fff; box-shadow: 0 8px 17px -14px #00683f; }
+    .btn-secondary { background: #fff; color: var(--blue-ui); border-color: #dce4eb; }
+    .field { display: grid; gap: 4px; font-size: .68rem; color: var(--muted); }
+    .field input, .field select { height: 40px; border: 1px solid #d7e1e9; border-radius: 8px; padding: 0 12px; font: 500 .8rem var(--sans); color: var(--ink-portal); min-width: 200px; }
+    .card { background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 18px; box-shadow: var(--shadow-card); max-width: 320px; }
+    .badge { display: inline-flex; align-items: center; gap: 5px; border: 1px solid #dfe6eb; border-radius: 100px; padding: 4px 9px; font-size: .67rem; font-weight: 650; background: #f7f8fa; color: #63788d; }
+    .badge::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+    .badge-green { background: #f1faf5; border-color: #c9e9d8; color: #007f51; }
+    .badge-gold { background: #fbf8ed; border-color: #eadbb3; color: #88670e; }
+    .badge-blue { background: #f2f7fa; border-color: #d2e3ec; color: #315c91; }
+    .header-demo { position: sticky; top: 0; z-index: 5; height: 64px; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; background: rgba(255,255,255,.97); border: 1px solid var(--line); border-radius: 12px; }
+    .header-demo strong { display: block; font-size: .76rem; letter-spacing: .12em; text-transform: uppercase; }
+    .header-demo small { font-size: .58rem; letter-spacing: .18em; text-transform: uppercase; color: var(--muted-2); }
+    .tabs-demo { display: flex; gap: 18px; border-bottom: 1px solid var(--line); padding: 0 8px; background: #fff; }
+    .tabs-demo span { padding: 14px 2px 12px; font-size: .77rem; font-weight: 600; color: #687c91; position: relative; }
+    .tabs-demo .on { color: var(--ink-portal); }
+    .tabs-demo .on::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: var(--green-ui); border-radius: 3px 3px 0 0; }
+    .drop-demo { position: relative; }
+    .drop-panel { position: absolute; top: 100%; left: 0; min-width: 200px; background: #fff; border: 1px solid #dce4eb; border-radius: 12px; padding: 8px; box-shadow: 0 22px 55px -35px #142d52; }
+    .drop-panel div { padding: 8px 12px; font-size: .77rem; border-radius: 8px; }
+    .drop-panel div:first-child { background: #f4f7fa; color: #007e50; }
+    table.demo { width: 100%; border-collapse: collapse; font-size: .77rem; background: #fff; border-radius: 12px; overflow: hidden; }
+    table.demo th { text-align: left; font-size: .63rem; letter-spacing: .11em; text-transform: uppercase; color: #708298; padding: 12px 10px; border-bottom: 1px solid var(--line); }
+    table.demo td { padding: 12px 10px; border-bottom: 1px solid #edf0f3; }
+    .toast { display: flex; gap: 10px; max-width: 360px; padding: 13px; border: 1px solid #cfded4; border-left: 3px solid var(--green-ui); border-radius: 11px; background: #fff; font-size: .76rem; box-shadow: var(--shadow-raised); }
+    .modal { width: min(100%, 420px); background: #fff; border-radius: 17px; padding: 24px; box-shadow: 0 28px 65px -40px #142d52; }
+    .progress { height: 4px; background: #e6ebef; border-radius: 4px; overflow: hidden; }
+    .progress > span { display: block; width: 66%; height: 100%; background: linear-gradient(90deg, #009b62 0 33%, #d6a72c 33% 66%, #315c91 66%); }
+    .cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+    .cal b { font-size: .62rem; color: #708298; text-align: center; }
+    .cal div { min-height: 54px; border: 1px solid var(--line); border-radius: 8px; padding: 4px; font-size: .7rem; background: #fff; }
+    .cal .today { border-color: var(--green-ui); box-shadow: 0 0 0 3px rgba(0,155,98,.12); }
+    .chip { display: block; margin-top: 4px; font-size: .58rem; background: #fff8e1; border-radius: 4px; padding: 2px 4px; }
+    .back { width: 46px; height: 46px; border-radius: 50%; border: 1px solid #c9d9ea; display: grid; place-items: center; background: #fff; box-shadow: 0 5px 19px rgba(16,42,80,.11); }
+    .lineart { width: 100%; height: 120px; background: #f7f8fa; border: 1px dashed #c9d4df; border-radius: 12px; display: grid; place-items: center; color: #5b7791; font-size: .75rem; }
+    pre { background: #142d52; color: #e2edfa; padding: 14px; border-radius: 10px; font-size: .72rem; overflow: auto; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 720px) { .grid-2 { grid-template-columns: 1fr; } .header-demo { height: 60px; } }
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+  </style>
+</head>
+<body>
+  <div class="topline"></div>
+  <div class="wrap">
+    <header class="hero">
+      <div class="eyebrow">PLANCHE DE RÉFÉRENCE · NON DESTINÉE AUX UTILISATEURS FINAUX</div>
+      <h1>Distinctions Nationales — République Gabonaise</h1>
+      <p class="lead">Document à l’usage de l’agent illustration. Toutes les valeurs ci-dessous sont extraites de <code>css/theme.css</code> et des composants existants. Ne pas inventer une nouvelle identité.</p>
+    </header>
+    <nav class="toc">
+      <a href="#identite">Identité</a>
+      <a href="#palette">Palette</a>
+      <a href="#typo">Typographie</a>
+      <a href="#composants">Composants</a>
+      <a href="#animations">Animations</a>
+      <a href="#illustrations">Illustrations</a>
+      <a href="#brief">Brief agent</a>
+      <a href="#integration">Intégration</a>
+      <a href="#responsive">Responsive</a>
+    </nav>
+
+    <section id="identite">
+      <h2>Identité visuelle</h2>
+      <p class="note">Plateforme de dépôt, de suivi et d’attribution des médailles et diplômes honorifiques. Caractère institutionnel gabonais : drapeau (vert, jaune, bleu), papier administratif, gravure, sobriété. Ambiance : calme, officielle, lisible. Principes : contraste texte/fond élevé, pas d’aplats saturés sur les surfaces de lecture, ornements en arrière-plan uniquement.</p>
+      <div class="grid-2">
+        <div class="card">
+          <div class="eyebrow">DIRECTION ARTISTIQUE</div>
+          <p>Papier grainé <code>assets/paper-grain.svg</code>, fonds blanc / blanc cassé, liseré tricolore 3 px en tête, sceau « Honneur et mérite », médailles conceptuelles en SVG (pas de photographies officielles).</p>
+        </div>
+        <div class="card">
+          <div class="eyebrow">CE QU’IL NE FAUT PAS FAIRE</div>
+          <p>Pas de néon, pas de glassmorphism excessif, pas de photographies génériques présentées comme des lieux réels, pas de blason officiel recréé, pas de texte dans les gravures de fond.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="palette">
+      <h2>Palette extraite du code</h2>
+      <p class="note">Sources : <code>@theme</code> de <code>css/theme.css</code> et variables portail <code>--p-ink / --p-green / --p-blue</code>. Rien n’est inventé. Les ombres : <code>--shadow-card</code> et <code>--shadow-raised</code>.</p>
+      <div class="swatches">
+        <div class="swatch"><i style="background:#fcfcfa"></i><p><strong>#FCFCFA</strong>Fond de page portail</p></div>
+        <div class="swatch"><i style="background:#ffffff;border-bottom:1px solid #e5eaf0"></i><p><strong>#FFFFFF</strong>Cartes, header</p></div>
+        <div class="swatch"><i style="background:#f8fafc"></i><p><strong>#F8FAFC</strong>Canvas / champs</p></div>
+        <div class="swatch"><i style="background:#f9f8f4"></i><p><strong>#F9F8F4</strong>Bandeaux papier</p></div>
+        <div class="swatch"><i style="background:#102a50"></i><p><strong>#102A50</strong>Encre titres (ink-900)</p></div>
+        <div class="swatch"><i style="background:#142d52"></i><p><strong>#142D52</strong>Texte portail</p></div>
+        <div class="swatch"><i style="background:#64748b"></i><p><strong>#64748B</strong>Texte secondaire</p></div>
+        <div class="swatch"><i style="background:#e5eaf0"></i><p><strong>#E5EAF0</strong>Bordures</p></div>
+        <div class="swatch"><i style="background:#d3dbe6"></i><p><strong>#D3DBE6</strong>Bordures fortes</p></div>
+        <div class="swatch"><i style="background:#009e60"></i><p><strong>#009E60</strong>Vert drapeau</p></div>
+        <div class="swatch"><i style="background:#009b62"></i><p><strong>#009B62</strong>Vert UI (boutons)</p></div>
+        <div class="swatch"><i style="background:#fcd116"></i><p><strong>#FCD116</strong>Jaune drapeau</p></div>
+        <div class="swatch"><i style="background:#d6a72c"></i><p><strong>#D6A72C</strong>Or institutionnel</p></div>
+        <div class="swatch"><i style="background:#3a75c4"></i><p><strong>#3A75C4</strong>Bleu drapeau</p></div>
+        <div class="swatch"><i style="background:#315c91"></i><p><strong>#315C91</strong>Bleu UI / liens</p></div>
+        <div class="swatch"><i style="background:#5b7791"></i><p><strong>#5B7791</strong>Traits des gravures</p></div>
+        <div class="swatch"><i style="background:#007f51"></i><p><strong>#007F51</strong>Statut succès</p></div>
+        <div class="swatch"><i style="background:#88670e"></i><p><strong>#88670E</strong>Statut attention</p></div>
+      </div>
+      <p class="warn" style="margin-top:14px">Si une valeur n’apparaît pas dans le code, la noter « à confirmer » plutôt que l’inventer. Les illustrations doivent rester dans les gris-bleus <code>#5b7791</code> / <code>#829cb4</code>, avec le tricolore uniquement en liseré, jamais en aplat de fond.</p>
+    </section>
+
+    <section id="typo">
+      <h2>Typographie</h2>
+      <div class="type-sample">
+        <div class="sora">Titre Sora 600 — Distinctions Nationales</div>
+        <div class="lora">Accents Lora 500 — Honneur et mérite</div>
+        <p>Corps Inter 400, 0.87 rem, interligne 1.65. Labels 0.68 rem, lettres espacées 0.17 em pour les eyebrow.</p>
+        <p class="meta">Hiérarchie : eyebrow 0.64 rem / h1 clamp 1.6–2.4 rem / h2 1.2–1.55 rem / table 0.77 rem / badge 0.67 rem. Line-height titres ≈ 1.16.</p>
+      </div>
+    </section>
+
+    <section id="composants">
+      <h2>Composants (styles existants)</h2>
+      <h3>Header sticky 64 px</h3>
+      <div class="header-demo">
+        <div><strong>République Gabonaise</strong><small>Distinctions Nationales</small></div>
+        <span class="eyebrow">Demandeur — Entreprise</span>
+        <span class="badge badge-green">Compte démo</span>
+      </div>
+      <div class="tabs-demo" style="margin-top:8px">
+        <span>Vue d’ensemble</span>
+        <span class="drop-demo on">Employés ▾
+          <div class="drop-panel">
+            <div>Liste des employés</div>
+            <div>Enregistrer un employé</div>
+            <div>Statistiques des employés</div>
+          </div>
+        </span>
+        <span>Distinctions</span>
+        <span>Finance</span>
+        <span>Cérémonies ▾</span>
+      </div>
+      <p class="note">Menus déroulants : panneau blanc, radius 12 px, ombre portée discrète, item actif fond <code>#f4f7fa</code>. Soulignement vert 3 px sous l’entrée parente.</p>
+
+      <h3>Boutons</h3>
+      <div class="row">
+        <span class="btn btn-primary">Action principale</span>
+        <span class="btn btn-secondary">Secondaire</span>
+      </div>
+      <p class="note">Primaire vert <code>#009b62</code>, hover <code>#008453</code>, translateY(-2px), 220 ms. Secondaire bordure <code>#dce4eb</code>.</p>
+
+      <h3>Champs</h3>
+      <div class="row">
+        <label class="field">Nom<input value="Moussavou"/></label>
+        <label class="field">Statut<select><option>Actif</option></select></label>
+      </div>
+
+      <h3>Carte, badges, toast, modale, progression</h3>
+      <div class="row">
+        <div class="card"><div class="eyebrow">SUIVI</div><h3 style="margin:6px 0">DNG-DEMO-2026-041</h3><span class="badge badge-blue">En instruction</span></div>
+        <span class="badge badge-green">Actif</span>
+        <span class="badge badge-gold">Invitation en attente</span>
+        <span class="badge">Ancienne affiliation</span>
+      </div>
+      <div class="row">
+        <div class="toast">Employé enregistré. Affiliation en attente de confirmation (simulation).</div>
+      </div>
+      <div class="row">
+        <div class="modal"><div class="eyebrow">CONFIRMATION</div><h3>Abandonner les modifications ?</h3><p class="note">Le formulaire a été modifié.</p><div class="row"><span class="btn btn-secondary">Continuer</span><span class="btn btn-primary">Abandonner</span></div></div>
+      </div>
+      <div class="progress" style="max-width:420px"><span></span></div>
+      <p class="note">Indicateur de parcours : dégradé tricolore, pas une barre unique saturée.</p>
+
+      <h3>Tableau</h3>
+      <table class="demo">
+        <thead><tr><th>Identité</th><th>Poste</th><th>Affiliation</th></tr></thead>
+        <tbody>
+          <tr><td>Alain Moussavou</td><td>Technicien supérieur</td><td><span class="badge badge-green">Actif</span></td></tr>
+          <tr style="background:#fffdf6"><td>Pierre Okoumba</td><td>Assistant technique</td><td><span class="badge badge-gold">Invitation en attente</span></td></tr>
+        </tbody>
+      </table>
+
+      <h3>Calendrier et retour en haut</h3>
+      <div class="cal">
+        <b>Lun</b><b>Mar</b><b>Mer</b><b>Jeu</b><b>Ven</b><b>Sam</b><b>Dim</b>
+        <div>13</div><div class="today">14<div class="chip">Cérémonie</div></div><div>15</div><div>16</div><div>17</div><div>18<div class="chip">Confirmée</div></div><div>19</div>
+      </div>
+      <div class="row" style="margin-top:16px"><div class="back">↑</div><span class="note">Bouton 46 px, visible après 460 px de défilement, z-index 60.</span></div>
+    </section>
+
+    <section id="animations">
+      <h2>Animations présentes</h2>
+      <table class="demo">
+        <thead><tr><th>Animation</th><th>Objectif</th><th>Intensité / durée</th><th>À éviter</th></tr></thead>
+        <tbody>
+          <tr><td>Apparition <code>rise</code></td><td>Entrée des blocs</td><td>14 px, 0.7 s, courbe 0.22/1/0.36/1</td><td>Rebond, bounce</td></tr>
+          <tr><td>Fade</td><td>Modales, overlays</td><td>0.22–0.5 s</td><td>Flash blanc</td></tr>
+          <tr><td>Header scrolled</td><td>Ombre au défilement</td><td>240 ms, ombre très légère</td><td>Ombre noire dense</td></tr>
+          <tr><td>Boutons</td><td>Micro-interaction</td><td>translateY(-2px), 220 ms</td><td>Scale agressif</td></tr>
+          <tr><td>Menus</td><td>Ouverture liste</td><td>rise 0.22 s</td><td>Slide 300 px</td></tr>
+          <tr><td>Retour en haut</td><td>Apparition du bouton</td><td>220 ms, 10 px</td><td>Rotation, bounce</td></tr>
+          <tr><td>Gravures accueil</td><td>Tracé / respiration</td><td>lente, 12–17 s</td><td>Clignotement</td></tr>
+          <tr><td>Progression formulaire</td><td>Étape du parcours</td><td>clip-path 0.55 s</td><td>Compteur fictif de dossier</td></tr>
+        </tbody>
+      </table>
+      <p class="note"><code>prefers-reduced-motion: reduce</code> annule ces mouvements. Les illustrations animées doivent offrir un état statique identique.</p>
+    </section>
+
+    <section id="illustrations">
+      <h2>Illustrations d’arrière-plan</h2>
+      <p class="note">Style attendu : line-art élégant, papier gravé, dessin institutionnel. Motifs gabonais (silhouette du pays, palmes, colonnes, fronton) en contours visibles mais atténués (opacité 0.32–0.64). Jamais par-dessus le texte : masques en dégradé vers le transparent. Animation de tracé possible, lente.</p>
+      <div class="lineart">Zone d’exemple — gravure bleu-gris #5B7791, sans remplissage saturé, sans photographie.</div>
+      <p class="note">Formats : SVG propres, viewBox stable, traits <code>stroke="#5b7791"</code>, pas de filtres lourds, &lt; 40 Ko. Livraison dans <code>assets/illustrations/</code>.</p>
+    </section>
+
+    <section id="brief">
+      <h2>Brief pour l’agent illustration</h2>
+      <ul class="note">
+        <li><strong>Objectif</strong> — fonds décoratifs compatibles avec le frontend actuel, lisibilité du texte prioritaire.</li>
+        <li><strong>Motifs</strong> — silhouette du Gabon, palmes, colonnes toscanes, fronton, faisceau tricolore en liseré, médailles en contour. Pas de blason officiel.</li>
+        <li><strong>Niveau de détail</strong> — gravure, pas de réalisme photographique. Peu de hachures serrées.</li>
+        <li><strong>Couleurs autorisées</strong> — #5b7791, #829cb4, #c9d4df, liseré #009b62 / #d6a72c / #315c91. Fond transparent.</li>
+        <li><strong>Contraste</strong> — le dessin reste sous le texte ; opacité maximale ≈ 0.64, souvent 0.36–0.45 près des titres.</li>
+        <li><strong>Composition</strong> — ancrer dans un angle ou une marge. Préserver une zone centrale / gauche vide pour titres et formulaires.</li>
+        <li><strong>Zones de texte à préserver</strong> — 64 px sous le header, colonne de lecture max ≈ 780 px, champs de formulaire, tableaux.</li>
+        <li><strong>Variantes</strong> — accueil (large), connexion (panneau gauche), portail demandeur, espaces internes. Une variante plus légère pour mobile.</li>
+        <li><strong>Animations</strong> — tracé progressif optionnel, 8–17 s, désactivable. Pas de parallaxe violent.</li>
+        <li><strong>Performance</strong> — un SVG par section, pas de bitmap 4K, pas de filtres SVG coûteux.</li>
+        <li><strong>Nommage</strong> — <code>home-hero.svg</code>, <code>home-process.svg</code>, <code>auth-aside.svg</code>, <code>portal-hero.svg</code>, <code>ws-hero.svg</code>.</li>
+      </ul>
+    </section>
+
+    <section id="integration">
+      <h2>Préparer l’intégration future</h2>
+      <p class="note">Dossier : <code>assets/illustrations/</code>. Ne pas remplacer les gravures actuelles de <code>js/views/home.js</code> par des placeholders. Quand les SVG arriveront, les référencer dans les bandeaux existants (<code>.portal-hero-art</code>, <code>.ws-hero-art</code>, aside de connexion) sans changer le système graphique.</p>
+      <pre>assets/illustrations/
+  README.md
+  home-hero.svg          ← accueil
+  home-process.svg
+  auth-aside.svg         ← connexion / inscription
+  portal-hero.svg        ← entreprise / personne
+  ws-hero.svg            ← profils internes</pre>
+    </section>
+
+    <section id="responsive">
+      <h2>Exigences responsive</h2>
+      <p class="note">Desktop : header 64 px, onglets horizontaux, menus en overlay. Tablette (≤ 760 px) : header 60 px, menus qui s’ouvrent sous l’entrée, cartes en une colonne. Mobile (≤ 520 px) : tabs en défilement horizontal, tableaux en scroll, modales max 85 dvh, bouton retour 44 px. Les gravures d’accueil sont masquées ou atténuées sous 1023 px / 639 px — les nouvelles illustrations doivent suivre la même discipline.</p>
+    </section>
+  </div>
+</body>
+</html>

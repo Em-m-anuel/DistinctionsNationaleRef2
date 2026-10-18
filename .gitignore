@@ -1,0 +1,6 @@
+# Dépendances d'édition du CSS ; non requises pour servir la version HTML.
+node_modules/
+
+# Brouillons et fichiers générés localement autres que css/app.css.
+.DS_Store
+*.log

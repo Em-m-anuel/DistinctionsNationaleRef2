@@ -1,0 +1,157 @@
+import type { DemoRole, DemoRoleConfig } from "@/demo/types";
+
+export const ROLE_CONFIGS: Record<DemoRole, DemoRoleConfig> = {
+  demandeur: {
+    label: "Demandeur — Entreprise / Ministère",
+    shortLabel: "Demandeur",
+    description: "Dépôt et suivi des demandes",
+    accent: "green",
+    nav: [
+      { label: "Vue d'ensemble", page: "overview", icon: "home" },
+      { label: "Mes dossiers", page: "dossiers", icon: "folder" },
+      { label: "Nouveau dossier", page: "new-dossier", icon: "plus" },
+      { label: "Récipiendaires", page: "recipients", icon: "users" },
+      { label: "Compléments demandés", page: "complements", icon: "upload" },
+      { label: "Recours", page: "recours", icon: "scale" },
+      { label: "Ordres de recette", page: "payments", icon: "fileText" },
+      { label: "Cérémonies", page: "ceremonies", icon: "calendar" },
+      { label: "Distinctions à remettre", page: "remises", icon: "medal" },
+      { label: "Notifications", page: "notifications", icon: "bell" },
+      { label: "Historique", page: "activity", icon: "clock" },
+      { label: "Profil et paramètres", page: "profile", icon: "settings" },
+    ],
+  },
+  recipient: {
+    label: "Récipiendaire / Personne",
+    shortLabel: "Récipiendaire",
+    description: "Distinctions et documents personnels",
+    accent: "gold",
+    nav: [
+      { label: "Vue d'ensemble", page: "overview", icon: "home" },
+      { label: "Mes distinctions", page: "recipients", icon: "medal" },
+      { label: "Mes cérémonies", page: "ceremonies", icon: "calendar" },
+      { label: "Documents à fournir", page: "documents", icon: "fileText" },
+      { label: "Mes relances", page: "relances", icon: "refresh" },
+      { label: "Mes photos", page: "documents", icon: "award" },
+      { label: "Notifications", page: "notifications", icon: "bell" },
+      { label: "Mon profil", page: "profile", icon: "settings" },
+    ],
+  },
+  secretariat: {
+    label: "Secrétariat — Boîte de transmission",
+    shortLabel: "Secrétariat",
+    description: "Réception et transmission administrative",
+    accent: "blue",
+    nav: [
+      { label: "Vue d'ensemble", page: "overview", icon: "home" },
+      { label: "Boîte de réception", page: "transmissions", icon: "folder" },
+      { label: "À transmettre", page: "transmissions", icon: "relay" },
+      { label: "Transmissions effectuées", page: "activity", icon: "checkCircle" },
+      { label: "Historique", page: "activity", icon: "clock" },
+      { label: "Notifications", page: "notifications", icon: "bell" },
+      { label: "Profil", page: "profile", icon: "settings" },
+    ],
+  },
+  ministre: {
+    label: "Ministre — Décisions hiérarchiques",
+    shortLabel: "Ministre",
+    description: "Consultation et avis hiérarchiques",
+    accent: "blue",
+    nav: [
+      { label: "Vue d'ensemble", page: "overview", icon: "home" },
+      { label: "Dossiers transmis", page: "dossiers", icon: "folder" },
+      { label: "Décisions initiales", page: "decisions", icon: "checkCircle" },
+      { label: "Recours", page: "recours", icon: "scale" },
+      { label: "Relances", page: "relances", icon: "refresh" },
+      { label: "Demandes de cérémonie", page: "ceremonies", icon: "calendar" },
+      { label: "Journal d'activité", page: "activity", icon: "clock" },
+      { label: "Notifications", page: "notifications", icon: "bell" },
+      { label: "Profil", page: "profile", icon: "settings" },
+    ],
+  },
+  dgt: {
+    label: "DGT — Décisions hiérarchiques",
+    shortLabel: "DGT",
+    description: "Examen et transmission des dossiers",
+    accent: "blue",
+    nav: [
+      { label: "Vue d'ensemble", page: "overview", icon: "home" },
+      { label: "Dossiers transmis", page: "dossiers", icon: "folder" },
+      { label: "Décisions initiales", page: "decisions", icon: "checkCircle" },
+      { label: "Recours", page: "recours", icon: "scale" },
+      { label: "Relances", page: "relances", icon: "refresh" },
+      { label: "Demandes de cérémonie", page: "ceremonies", icon: "calendar" },
+      { label: "Journal d'activité", page: "activity", icon: "clock" },
+      { label: "Notifications", page: "notifications", icon: "bell" },
+      { label: "Profil", page: "profile", icon: "settings" },
+    ],
+  },
+  dr: {
+    label: "DR — Décisions hiérarchiques",
+    shortLabel: "DR",
+    description: "Décision finale sur le dossier initial",
+    accent: "green",
+    nav: [
+      { label: "Vue d'ensemble", page: "overview", icon: "home" },
+      { label: "Dossiers transmis", page: "dossiers", icon: "folder" },
+      { label: "Décisions initiales", page: "decisions", icon: "checkCircle" },
+      { label: "Recours", page: "recours", icon: "scale" },
+      { label: "Relances", page: "relances", icon: "refresh" },
+      { label: "Demandes de cérémonie", page: "ceremonies", icon: "calendar" },
+      { label: "Journal d'activité", page: "activity", icon: "clock" },
+      { label: "Notifications", page: "notifications", icon: "bell" },
+      { label: "Profil", page: "profile", icon: "settings" },
+    ],
+  },
+  service: {
+    label: "Service des Distinctions Nationales",
+    shortLabel: "Service distinctions",
+    description: "Instruction, validation et cérémonies",
+    accent: "green",
+    nav: [
+      { label: "Vue d'ensemble", page: "overview", icon: "home" },
+      { label: "Dossiers à instruire", page: "instruction", icon: "folder" },
+      { label: "Récipiendaires", page: "recipients", icon: "users" },
+      { label: "Compléments et justificatifs", page: "complements", icon: "upload" },
+      { label: "Assouplissements", page: "adjustments", icon: "scale" },
+      { label: "Validation des distinctions", page: "eligibility", icon: "checkCircle" },
+      { label: "Ordres de recette", page: "payments", icon: "fileText" },
+      { label: "Planification des cérémonies", page: "agenda", icon: "calendar" },
+      { label: "Documents de délégation", page: "delegations", icon: "fileText" },
+      { label: "Présences", page: "attendance", icon: "users" },
+      { label: "Statistiques par campagne", page: "campaigns", icon: "clipboard" },
+      { label: "Notifications", page: "notifications", icon: "bell" },
+      { label: "Journal d'activité", page: "activity", icon: "clock" },
+    ],
+  },
+  regisseur: {
+    label: "Régisseur des Médailles",
+    shortLabel: "Régisseur",
+    description: "Stock, approvisionnements et remises",
+    accent: "gold",
+    nav: [
+      { label: "Vue d'ensemble", page: "overview", icon: "home" },
+      { label: "Stock des médailles", page: "stock", icon: "medal" },
+      { label: "Stock des diplômes", page: "stock", icon: "fileText" },
+      { label: "Mouvements de stock", page: "movements", icon: "refresh" },
+      { label: "Approvisionnements", page: "supplies", icon: "truck" },
+      { label: "Bons de commande", page: "orders", icon: "clipboard" },
+      { label: "Livraisons", page: "deliveries", icon: "truck" },
+      { label: "Budgets par campagne", page: "campaigns", icon: "scale" },
+      { label: "Remise des médailles", page: "remises", icon: "medal" },
+      { label: "Retraits sans cérémonie", page: "withdrawals", icon: "users" },
+      { label: "Historique", page: "activity", icon: "clock" },
+      { label: "Notifications", page: "notifications", icon: "bell" },
+    ],
+  },
+};
+
+export const ROLE_ORDER: DemoRole[] = ["demandeur", "recipient", "secretariat", "ministre", "dgt", "dr", "service", "regisseur"];
+
+export function isDemoRole(value: string | undefined): value is DemoRole {
+  return Boolean(value && ROLE_ORDER.includes(value as DemoRole));
+}
+
+export function isDemoPage(value: string | undefined): value is import("@/demo/types").DemoPage {
+  return Boolean(value);
+}
