@@ -62,7 +62,7 @@ function siteAccessDeniedHtml(ctx) {
     <p class="page-sub">${esc(lead)}</p>
     <div class="mp-denied-actions">
       <a class="btn btn-primary" href="${ownHome}">Ouvrir mon espace</a>
-      <a class="btn btn-secondary" href="/">Accueil public</a>
+      <a class="btn btn-secondary" href="${sitePublicPath("home")}">Accueil public</a>
     </div>
   </section>
   <section class="card mt">

@@ -219,6 +219,20 @@ function sitePagePath(roleOrFamily, page) {
   return config.base + canonical + "/";
 }
 
+/**
+ * URL d'une page publique. Les valeurs par défaut sont celles du site
+ * multipage ; l'adaptateur Laravel les remplace par les routes de
+ * l'application (SITE_PUBLIC), y compris sous un sous-dossier.
+ * @param {'home'|'login'|'register'} name
+ */
+function sitePublicPath(name) {
+  const key = name || "home";
+  if (typeof SITE_PUBLIC !== "undefined" && SITE_PUBLIC[key]) return SITE_PUBLIC[key];
+  if (key === "login") return "/connexion/";
+  if (key === "register") return "/inscription/";
+  return "/";
+}
+
 /** Toutes les URL du site, dérivées de la configuration. */
 function siteAllRoutes() {
   const routes = [];

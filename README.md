@@ -34,6 +34,26 @@ npm run build:pages    # node tools/build-pages.mjs
 Démarrage rapide : `/` (accueil) → `/connexion/` → « Explorer la
 démonstration » → choisir un des 14 profils fictifs.
 
+## Version Laravel 12 (vues Blade)
+
+Le dossier **`laravel/`** contient la découpe complète du frontend en vues Blade,
+prête à être copiée dans un projet Laravel 12 :
+
+- 72 vues de profil, 3 pages publiques, 2 pages d'erreur, 4 layouts,
+  22 composants partagés ;
+- 76 routes GET + 4 POST (`routes/web.php`), contrôleurs fournis ;
+- `config/meditra.php` généré (familles, pages, menus, rôles, ordre des scripts) ;
+- CSS, JS et assets prêts dans `public/`, chargés par `asset()` (sans Vite).
+
+Génération : `node tools/build-laravel.mjs`. Guides :
+
+| Document | Contenu |
+| --- | --- |
+| `INSTALLATION_LARAVEL.md` | copie des fichiers, provider, `.env`, routes, première exécution, dépannage |
+| `INTEGRATION_BACKEND.md` | authentification, autorisation, données métier, actions à transformer en API |
+| `FONCTIONNALITES_LARAVEL.md` | ce qui est préservé, adapté ou bloqué (et pourquoi) |
+| `laravel/CORRESPONDANCE_URLS.md` | tableau URL ↔ route ↔ vue (généré) |
+
 > **Test sur votre propre PC** (archive téléchargée, Windows/macOS/Linux,
 > téléphone sur le même Wi-Fi, dépannage) : voir **`TESTER_EN_LOCAL.md`**.
 

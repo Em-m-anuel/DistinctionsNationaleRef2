@@ -369,7 +369,7 @@ function cfTop(role, page) {
   const accent = role === "demandeur" ? cfBtn("Nouveau dossier " + icon("plus", "size-4"), "go", "data-page=\"new-dossier\"", "cf-accent") : "";
   return `<header class="cf-top ws-header sticky top-0 z-50">
     <div class="cf-top-inner">
-      <button type="button" data-action="nav" data-path="/" class="cf-brand">${emblem({ size: 36 })}<span><strong>Distinctions Nationales</strong><small>République Gabonaise</small></span></button>
+      <button type="button" data-action="nav" data-path="${sitePublicPath("home")}" class="cf-brand">${emblem({ size: 36 })}<span><strong>Distinctions Nationales</strong><small>République Gabonaise</small></span></button>
       ${employe ? `<a class="cf-follow" data-action="ws-page" data-page="overview">Suivre ma demande</a>` : `<nav class="cf-nav ws-tabs" aria-label="Menu du profil">${nav}</nav>${accent}`}
       <div class="cf-tools">
         <button type="button" class="cf-icon-btn cf-mobile-only" data-cf-action="mobile" aria-label="Menu">${icon("menu", "size-5")}</button>
@@ -1561,7 +1561,7 @@ function cfAction(action, el, role, page) {
     case "logout":
       if (typeof leavePresentation === "function") leavePresentation();
       if (typeof signOut === "function") signOut();
-      navigateTo("/connexion/"); return true;
+      navigateTo(sitePublicPath("login")); return true;
     case "switch": {
       if (typeof leavePresentation === "function") leavePresentation();
       if (typeof enterPresentation === "function") enterPresentation(el.dataset.role, el.dataset.email);

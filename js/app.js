@@ -34,7 +34,7 @@
       <p class="mp-boot-detail"><code>${String(message).replace(/[<>&]/g, (c) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;" }[c]))}</code></p>
       <div class="mp-denied-actions">
         <a class="btn btn-primary" href="${window.location.pathname}">Recharger la page</a>
-        <a class="btn btn-secondary" href="/">Accueil public</a>
+        <a class="btn btn-secondary" href="${sitePublicPath("home")}">Accueil public</a>
       </div>
     </section>`;
   }
@@ -54,15 +54,15 @@
   function redirectLegacyHash() {
     const hash = window.location.hash || "";
     if (!hash || hash === "#" || hash === "#/") return false;
-    if (hash === "#/login") { window.location.replace("/connexion/"); return true; }
-    if (hash === "#/register") { window.location.replace("/inscription/"); return true; }
+    if (hash === "#/login") { window.location.replace(sitePublicPath("login")); return true; }
+    if (hash === "#/register") { window.location.replace(sitePublicPath("register")); return true; }
     if (hash.indexOf("#/app/") === 0) {
       const parsed = typeof parseWorkspacePath === "function" ? parseWorkspacePath(hash.slice(1)) : null;
       if (parsed) {
         window.location.replace(workspacePath(parsed.role, parsed.page));
         return true;
       }
-      window.location.replace("/connexion/");
+      window.location.replace(sitePublicPath("login"));
       return true;
     }
     const ref = /^#\/dossiers\/([^/?]+)/.exec(hash);
@@ -197,7 +197,7 @@
     if (action === "signout") {
       if (typeof leavePresentation === "function") leavePresentation();
       signOut();
-      window.location.assign("/connexion/");
+      window.location.assign(sitePublicPath("login"));
       return;
     }
     if (action === "close-modal") {
