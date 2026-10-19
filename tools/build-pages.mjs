@@ -318,6 +318,30 @@ function scriptTags(list) {
   return list.map((src) => `    <script src="${src}"></script>`).join("\n");
 }
 
+// Filet de sécurité en ligne : si les fichiers JS ne sont pas chargés
+// (site servi depuis un sous-dossier, scripts bloqués, fichier absent),
+// l'écran vide est remplacé par une explication actionnable.
+const BOOT_GUARD = `    <script>
+      window.setTimeout(function () {
+        if (window.__siteBooted) return;
+        var zone = document.getElementById("view") || document.getElementById("app");
+        if (!zone) return;
+        var html = [
+          '<section style="max-width:720px;margin:64px auto;padding:0 20px;font-family:system-ui,sans-serif">',
+          '<p style="letter-spacing:.12em;text-transform:uppercase;font-size:12px;color:#007e50;font-weight:700">Chargement interrompu</p>',
+          '<h1 style="font-size:26px;margin:8px 0 12px;color:#102a50">Le site n’a pas pu charger ses fichiers</h1>',
+          '<p style="color:#3f556b;line-height:1.6">Les scripts ou les feuilles de style de cette page ne sont pas accessibles. ',
+          'Le site doit être servi à la racine du domaine (par exemple <code>npm run serve</code>, puis l’adresse affichée).</p>',
+          '<p style="margin-top:18px"><a href="/" style="display:inline-block;padding:10px 16px;border-radius:10px;background:#102a50;color:#fff;text-decoration:none">Revenir à l’accueil</a></p>',
+          '</section>'
+        ].join("");
+        zone.innerHTML = html;
+      }, 3500);
+    </script>`;
+
+const NOSCRIPT = `    <noscript><div class="mp-noscript container"><strong>JavaScript est désactivé.</strong>
+      Ce portail affiche ses pages avec JavaScript ; les liens de navigation restent utilisables.</div></noscript>`;
+
 const LEAFLET = `    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" async onload="window.__leaflet='ok'" onerror="window.__leaflet='error'"></script>`;
 
 function workspaceDocument(family, page) {
@@ -328,6 +352,7 @@ function workspaceDocument(family, page) {
   return `${head({ title, description })}
   <body class="mp-workspace" data-site-kind="workspace" data-site-family="${family}" data-site-page="${page}">
     <a class="mp-skip" href="#view">Aller au contenu</a>
+    ${NOSCRIPT}
     ${SPRITE}
     <div class="go-workspace">
       <div class="progress-rail" aria-hidden="true"><i class="progress-fill"></i></div>
@@ -346,6 +371,7 @@ function workspaceDocument(family, page) {
     <div id="tip" class="tip go-tip" hidden></div>
 ${LEAFLET}
 ${scriptTags(WORKSPACE_SCRIPTS)}
+${BOOT_GUARD}
   </body>
 </html>
 `;
@@ -357,11 +383,13 @@ function homeDocument() {
     description: "MEDITRA — Médaille et Distinctions du Travail. Portail de dépôt, de suivi et d’attribution des médailles du travail de la République Gabonaise.",
   })}
   <body class="mp-home" data-site-kind="home">
+    ${NOSCRIPT}
     ${SPRITE}
     <div id="app"></div>
     <div id="toasts" class="toast-stack go-toasts"></div>
     <div id="tip" class="tip go-tip" hidden></div>
 ${scriptTags([...COMMON_SCRIPTS, "/js/site/routes.js", "/js/app.js"])}
+${BOOT_GUARD}
   </body>
 </html>
 `;
@@ -374,11 +402,35 @@ function authDocument(mode) {
     description: `${register ? "Inscription" : "Connexion"} au portail MEDITRA des Médailles et Distinctions du Travail de la République Gabonaise.`,
   })}
   <body class="mp-auth" data-site-kind="auth" data-site-auth="${mode}">
+    ${NOSCRIPT}
     ${SPRITE}
     <div id="app"></div>
     <div id="toasts" class="toast-stack go-toasts"></div>
     <div id="tip" class="tip go-tip" hidden></div>
 ${scriptTags([...COMMON_SCRIPTS, "/js/site/routes.js", "/js/app.js"])}
+${BOOT_GUARD}
+  </body>
+</html>
+`;
+}
+
+function notFoundDocument() {
+  const spaces = FAMILY_KEYS.map((family) => `<li><a href="${FAMILIES[family].base}">${esc(FAMILIES[family].label)}</a></li>`).join("");
+  return `${head({
+    title: "Page introuvable — MEDITRA",
+    description: "Cette page n’existe pas sur le portail MEDITRA des Médailles et Distinctions du Travail.",
+  })}
+  <body class="mp-home" data-site-kind="notfound">
+    ${NOSCRIPT}
+    ${SPRITE}
+    <main class="container mp-nf">
+      <p class="page-eyebrow">Erreur 404</p>
+      <h1>Cette page n’existe pas</h1>
+      <p class="page-sub">L’adresse demandée ne correspond à aucune page du portail. Utilisez les liens ci-dessous.</p>
+      <p><a class="btn btn-primary" href="/">Revenir à l’accueil</a> <a class="btn btn-secondary" href="/connexion/">Se connecter</a></p>
+      <h2 class="card-title">Espaces du portail</h2>
+      <ul class="mp-nf-list">${spaces}</ul>
+    </main>
   </body>
 </html>
 `;
@@ -397,7 +449,8 @@ for (const family of FAMILY_KEYS) {
 write("index.html", homeDocument());
 write("connexion/index.html", authDocument("login"));
 write("inscription/index.html", authDocument("register"));
-generated.push("index.html", "connexion/index.html", "inscription/index.html");
+write("404.html", notFoundDocument());
+generated.push("index.html", "connexion/index.html", "inscription/index.html", "404.html");
 
 console.log(`Site multipage généré : ${generated.length} documents.`);
 for (const file of generated) console.log("  · " + file);

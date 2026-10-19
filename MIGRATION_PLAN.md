@@ -135,6 +135,8 @@ page métier qui les rend réellement ; ils ne créent pas de nouvelles URL.
 | Accès croisé (`demandeur` → `/administration/users/`) | « Espace non autorisé » |
 | Démonstration : 14 profils, sélection d'un profil | session de présentation posée + navigation |
 | Menus compte / notifications / mobile | ouverture et fermeture OK |
+| Parcours HTTP réel (76 pages, 111 ressources) | 200 pour toutes, types MIME corrects, 0 lien mort |
+| Adresse inexistante | page 404 stylée (et non un écran blanc) |
 
 Les tests jsdom ne remplacent pas une validation visuelle : aucun navigateur
 graphique n'est disponible dans l'environnement. Les pages ont été vérifiées
@@ -155,3 +157,7 @@ structurellement et par exécution réelle des scripts.
    une fiche « Dossier non accessible » au lieu d'une erreur d'exécution ;
    la cause racine (périmètre des pièces du jeu de démonstration) reste à
    revoir avec le futur backend.
+5. **Le site doit rester servi** (`npm run serve`). Les URL sont absolues :
+   un hébergement en sous-dossier (par exemple un site de projet GitHub
+   Pages) exigerait une base configurable. Un garde-fou visible remplace
+   l'écran blanc si les fichiers ne se chargent pas.

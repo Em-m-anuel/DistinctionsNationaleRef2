@@ -9,9 +9,19 @@ multipage avec des URL réelles (`/profil/...`, `/administration/...`), qui ne
 fonctionnent pas en `file://`.
 
 ```sh
-npm run serve          # python3 -m http.server 8000 --bind 0.0.0.0
+npm run serve          # node tools/serve.mjs --port 8000 --host 0.0.0.0
 # puis http://localhost:8000
 ```
+
+`tools/serve.mjs` (sans dépendance) sert les URL avec ou sans barre finale,
+applique les bons types MIME et envoie `Cache-Control: no-store` sur le HTML,
+le CSS et le JS : une page régénérée n'est jamais servie avec d'anciens
+fichiers en cache. `npm run serve:python` reste disponible en secours.
+
+> Le site utilise des URL absolues (`/css/…`, `/profil/…`) : il doit être
+> servi **à la racine d'un domaine** (ou d'un sous-domaine), pas depuis un
+> sous-dossier. Une page qui ne peut pas charger ses fichiers affiche
+> désormais un message explicite au lieu d'un écran blanc.
 
 Aucune compilation n'est nécessaire : **`css/app.css`** est déjà générée et
 les 72 pages HTML sont livrées. Pour les régénérer après une modification de
@@ -58,6 +68,8 @@ Distinctions_Front/
 ├── administration/       # Espace administrateur
 ├── connexion/, inscription/
 ├── tools/build-pages.mjs # Générateur des pages HTML
+├── tools/serve.mjs       # Serveur statique local (sans dépendance)
+├── 404.html              # Page introuvable
 ├── css/site.css          # Compléments du site multipage
 ├── assets/                # Les 6 JPG de l’archive d’origine, conservés
 ├── react-original/        # Ancien projet React/Vite + src.zip + src extrait

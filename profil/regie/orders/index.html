@@ -20,6 +20,8 @@
   </head>
   <body class="mp-workspace" data-site-kind="workspace" data-site-family="regie" data-site-page="orders">
     <a class="mp-skip" href="#view">Aller au contenu</a>
+        <noscript><div class="mp-noscript container"><strong>JavaScript est désactivé.</strong>
+      Ce portail affiche ses pages avec JavaScript ; les liens de navigation restent utilisables.</div></noscript>
     <svg width="0" height="0" style="position:absolute" aria-hidden="true">
         <defs>
           <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></symbol>
@@ -205,5 +207,22 @@
     <script src="/js/site/chrome.js"></script>
     <script src="/js/site/workspace-page.js"></script>
     <script src="/js/app.js"></script>
+    <script>
+      window.setTimeout(function () {
+        if (window.__siteBooted) return;
+        var zone = document.getElementById("view") || document.getElementById("app");
+        if (!zone) return;
+        var html = [
+          '<section style="max-width:720px;margin:64px auto;padding:0 20px;font-family:system-ui,sans-serif">',
+          '<p style="letter-spacing:.12em;text-transform:uppercase;font-size:12px;color:#007e50;font-weight:700">Chargement interrompu</p>',
+          '<h1 style="font-size:26px;margin:8px 0 12px;color:#102a50">Le site n’a pas pu charger ses fichiers</h1>',
+          '<p style="color:#3f556b;line-height:1.6">Les scripts ou les feuilles de style de cette page ne sont pas accessibles. ',
+          'Le site doit être servi à la racine du domaine (par exemple <code>npm run serve</code>, puis l’adresse affichée).</p>',
+          '<p style="margin-top:18px"><a href="/" style="display:inline-block;padding:10px 16px;border-radius:10px;background:#102a50;color:#fff;text-decoration:none">Revenir à l’accueil</a></p>',
+          '</section>'
+        ].join("");
+        zone.innerHTML = html;
+      }, 3500);
+    </script>
   </body>
 </html>

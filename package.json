@@ -6,9 +6,10 @@
   "scripts": {
     "css": "tailwindcss -i css/theme.css -o css/app.css --minify",
     "css:watch": "tailwindcss -i css/theme.css -o css/app.css --watch",
-    "serve": "python3 -m http.server 8000 --bind 0.0.0.0",
+    "serve": "node tools/serve.mjs --port 8000 --host 0.0.0.0",
     "test": "node --test tests/*.cjs",
-    "build:pages": "node tools/build-pages.mjs"
+    "build:pages": "node tools/build-pages.mjs",
+    "serve:python": "python3 -m http.server 8000 --bind 0.0.0.0"
   },
   "devDependencies": {
     "@tailwindcss/cli": "4.1.17",

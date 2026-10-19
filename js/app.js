@@ -19,6 +19,33 @@
   const root = document.getElementById("app");
   let chromeCleanup = null;
 
+  /* ------------------------ Filet de sécurité d'affichage ------------------- */
+
+  // Une erreur d'exécution ne doit jamais laisser une page blanche : on
+  // affiche un message lisible (avec la cause) au lieu de rien.
+  function showBootError(error) {
+    const message = (error && (error.message || error.reason && error.reason.message)) || String(error || "Erreur inconnue");
+    const zone = document.getElementById("view") || root || document.body;
+    if (!zone) return;
+    zone.innerHTML = `<section class="page-head mp-boot-error" role="alert">
+      <p class="page-eyebrow">Affichage interrompu</p>
+      <h1 class="page-title">Cette page n'a pas pu s'afficher</h1>
+      <p class="page-sub">Le contenu n'a pas pu être monté. Vos données ne sont pas en cause.</p>
+      <p class="mp-boot-detail"><code>${String(message).replace(/[<>&]/g, (c) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;" }[c]))}</code></p>
+      <div class="mp-denied-actions">
+        <a class="btn btn-primary" href="${window.location.pathname}">Recharger la page</a>
+        <a class="btn btn-secondary" href="/">Accueil public</a>
+      </div>
+    </section>`;
+  }
+
+  window.addEventListener("error", (event) => {
+    // Erreurs des scripts tiers (polices, carte) : sans incidence ici.
+    if (event && event.target && event.target.tagName === "SCRIPT" && event.target.src && !/\/js\//.test(event.target.src)) return;
+    showBootError(event.error || event.message);
+  });
+  window.addEventListener("unhandledrejection", (event) => showBootError(event.reason));
+
   /* -------------------- Anciens favoris (href="#/…") ----------------------- */
 
   // Les URL à hash de l'ancienne SPA ne sont plus des routes. Un favori
@@ -51,20 +78,40 @@
 
   /* ----------------------------- Rendu initial ----------------------------- */
 
-  if (kind === "home") {
-    if (root) root.innerHTML = renderHome(getSession());
-    mountHome();
-    mountAppChrome();
-  } else if (kind === "auth") {
-    const route = body.dataset.siteAuth === "register" ? "/register" : "/login";
-    document.title = (route === "/register" ? "Inscription" : "Connexion") + " — MEDITRA";
-    if (root) root.innerHTML = renderLogin(getSession(), route);
-    mountLogin();
-    mountAppChrome();
-  } else if (typeof siteMountWorkspace === "function") {
-    siteMountWorkspace();
-    mountAppChrome();
+  try {
+    if (kind === "home") {
+      if (root) root.innerHTML = renderHome(getSession());
+      mountHome();
+      mountAppChrome();
+    } else if (kind === "auth") {
+      const route = body.dataset.siteAuth === "register" ? "/register" : "/login";
+      document.title = (route === "/register" ? "Inscription" : "Connexion") + " — MEDITRA";
+      if (root) root.innerHTML = renderLogin(getSession(), route);
+      mountLogin();
+      mountAppChrome();
+    } else if (typeof siteMountWorkspace === "function") {
+      siteMountWorkspace();
+      mountAppChrome();
+    } else {
+      showBootError(new Error("siteMountWorkspace indisponible : js/site/workspace-page.js n'a pas été chargé."));
+    }
+  } catch (error) {
+    showBootError(error);
   }
+
+  // Le garde-fou en ligne des pages générées vérifie ce drapeau : s'il est
+  // absent après quelques secondes, les scripts n'ont pas été chargés.
+  window.__siteBooted = true;
+
+  // Si le montage n'a rien produit (script non chargé, exception silencieuse),
+  // l'écran de chargement est remplacé par un diagnostic actionnable.
+  window.setTimeout(() => {
+    if (kind !== "workspace") return;
+    const view = document.getElementById("view");
+    if (!view) return;
+    if (!view.querySelector(".mp-loading")) return;
+    showBootError(new Error("Le contenu de la page ne s'est pas monté (scripts bloqués ou incomplets)."));
+  }, 6000);
 
   /* ------------------------------ Chrome visuel ---------------------------- */
 
