@@ -7,7 +7,7 @@ const vm = require('node:vm');
 
 const root = path.resolve(__dirname, '..');
 const files = [
-  'js/icons.js', 'js/data.js', 'js/auth.js', 'js/demo-accounts.js', 'js/portal-demo.js', 'js/demo-store.js',
+  'js/site-config.js', 'js/icons.js', 'js/data.js', 'js/auth.js', 'js/demo-accounts.js', 'js/portal-demo.js', 'js/demo-store.js',
   'js/router.js', 'js/ui.js', 'js/views/home.js', 'js/registration.js', 'js/views/login.js',
   'js/views/workspace.js', 'js/views/portals.js', 'js/views/portal-extras.js', 'js/views/admin.js',
   'js/views/role-pages.js', 'js/views/shared.js', 'js/cf-store.js',
@@ -29,7 +29,12 @@ function storage() {
 
 function RO() { this.observe = function () {}; this.unobserve = function () {}; this.disconnect = function () {}; }
 
-const loc = { hash: '#/app/dr/dossiers', pathname: '/', protocol: 'http:', hostname: 'localhost' };
+const loc = {
+  hash: '#/app/dr/dossiers', pathname: '/profil/direction/', protocol: 'http:', hostname: 'localhost',
+  assigned: null,
+  assign(url) { this.assigned = url; },
+  replace(url) { this.assigned = url; },
+};
 const hashListeners = [];
 function addEL(type, fn, opts) {
   if (type !== 'hashchange') return;
@@ -75,7 +80,7 @@ for (const name of files) {
   vm.runInContext(fs.readFileSync(path.join(root, name), 'utf8'), ctx, { filename: name });
 }
 vm.runInContext(`globalThis.H = {
-  GO: window.GO, cfState, cfReset, goHydrate, currentPath, normalizePath, parseWorkspacePath
+  GO: window.GO, cfState, cfReset, goHydrate, currentPath, normalizePath, parseWorkspacePath, workspacePath
 };`, ctx);
 const H = ctx.H;
 
@@ -91,42 +96,62 @@ test('un hash proto #/dossiers/<ref> n’est pas une route FrontII', () => {
   assert.equal(H.normalizePath('/dossiers/DNG-2026-016'), '/');
 });
 
-test('hashchange proto restaure #/app/<rôle>/… et ouvre le dossier', () => {
+test('un lien proto #/app/<rôle>/… charge la page réelle et transmet la référence', () => {
   H.cfReset();
   H.cfState.spaceRole = 'dr';
   H.goHydrate('dr');
   ctx.window.__goLastAppHash = '#/app/dr/dossiers';
   loc.hash = '#/app/dr/dossiers';
+  loc.assigned = null;
 
-  const opened = [];
-  const prev = H.GO.views.dossiers.update;
-  H.GO.views.dossiers.update = function (r) { opened.push(r && r.id); };
-  try {
-    loc.hash = '#/dossiers/DNG-2026-016';
-    const capture = hashListeners.filter((l) => l.capture);
-    assert.ok(capture.length, 'écouteur hashchange en capture');
-    capture.forEach((l) => l.fn());
-    assert.equal(loc.hash, '#/app/dr/dossiers');
-    assert.equal(H.currentPath(), '/app/dr/dossiers');
-    assert.deepEqual(opened, ['DNG-2026-016']);
-  } finally {
-    H.GO.views.dossiers.update = prev;
-    loc.hash = '#/app/dr/dossiers';
-  }
+  loc.hash = '#/dossiers/DNG-2026-016';
+  const capture = hashListeners.filter((l) => l.capture);
+  assert.ok(capture.length, 'écouteur hashchange en capture');
+  capture.forEach((l) => l.fn());
+
+  // Plus de restitution de hash : une vraie URL est demandée au navigateur,
+  // et la référence du dossier y est conservée pour être rouverte.
+  assert.equal(loc.assigned, '/profil/direction/dossiers/?ref=DNG-2026-016');
+  assert.equal(H.workspacePath('dr', 'dossiers'), '/profil/direction/dossiers/');
+  assert.doesNotMatch(String(loc.assigned), /^#/);
 });
 
-test('GO.setHash mappe #/dossiers vers la route FrontII', () => {
+test('GO.setHash #/dossiers demande la page réelle de la famille', () => {
   H.cfState.spaceRole = 'dr';
   H.goHydrate('dr');
   loc.hash = '#/app/dr/overview';
+  loc.assigned = null;
   ctx.window.__goLastAppHash = '#/app/dr/overview';
   H.GO.setHash('#/dossiers');
-  assert.equal(loc.hash, '#/app/dr/dossiers');
+  assert.equal(loc.assigned, '/profil/direction/dossiers/');
 });
 
-test('le workspace ne se remonte pas si rôle et page sont inchangés', () => {
+test('app.js monte la page multipage au lieu de repeindre toute la SPA', () => {
   const src = fs.readFileSync(path.join(root, 'js/app.js'), 'utf8');
-  assert.match(src, /sameSpace/);
-  assert.match(src, /data-cf-role/);
-  assert.match(src, /data-cf-page/);
+  assert.match(src, /siteMountWorkspace\(\)/);
+  assert.match(src, /siteRepaintWorkspace\(\)/);
+  assert.match(src, /siteKind/);
+  assert.doesNotMatch(src, /root\.innerHTML\s*=\s*\(typeof skipLink/);
+});
+
+test('chaque page métier possède un fichier HTML réel et ses repères', () => {
+  const families = ['demandeur', 'recipiendaire', 'secretariat', 'direction', 'service', 'regie'];
+  let seen = 0;
+  for (const family of families) {
+    const dir = path.join(root, 'profil', family);
+    assert.ok(fs.existsSync(dir), `${family} : dossier manquant`);
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      if (!entry.isDirectory()) continue;
+      const file = path.join(dir, entry.name, 'index.html');
+      assert.ok(fs.existsSync(file), `${family}/${entry.name} : page manquante`);
+      const html = fs.readFileSync(file, 'utf8');
+      const familyKey = { demandeur: 'demandeur', recipiendaire: 'recipient', secretariat: 'secretariat', direction: 'direction', service: 'service', regie: 'regie' }[family];
+      assert.ok(familyKey, `${family} : famille non reconnue`);
+      assert.match(html, new RegExp(`data-site-family="${familyKey}"`));
+      assert.match(html, new RegExp(`data-site-page="${entry.name}"`));
+      assert.match(html, /id="view"/);
+      seen += 1;
+    }
+  }
+  assert.ok(seen >= 60, `${seen} pages métier générées`);
 });

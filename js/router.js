@@ -1,72 +1,65 @@
 /* ==================================================================
    js/router.js
-   Routage minimaliste — conversion de `src/lib/router.ts`.
+   Navigation réelle d'un site multipage.
 
-   L'original s'appuyait sur l'API History (`/login`, `/app/<role>/<page>`)
-   et nécessitait donc un serveur capable de renvoyer `index.html` sur
-   toutes les routes. La version statique utilise le **hash** :
+   Il n'y a plus de routeur client : `navigateTo()` provoque un chargement
+   de document (Location.assign). Chaque page possède son propre fichier
+   HTML et peut être ouverte, rechargée ou mise en favori directement.
 
-       #/            → accueil
-       #/login       → connexion   (#/connexion est accepté en alias)
-       #/register    → inscription (frontend uniquement)
-       #/app/<role>/<page>         → espace connecté
-
-   Avantage : le site fonctionne en double-cliquant sur `index.html`
-   (protocole `file://`), sans serveur ni configuration de réécriture.
-   Aucun routeur externe n'est utilisé, comme dans l'original.
+   Les anciennes URL (`#/login`, `#/app/<rôle>/<page>`) sont traduites une
+   fois pour conserver les favoris, puis le navigateur charge la nouvelle
+   page.
 ================================================================== */
 
-const KNOWN_ROUTES = ["/", "/login", "/register"];
-
-/** Normalise un chemin : supprime la query, les slashs de fin, gère l'alias. */
-function normalizePath(pathname) {
-  const path = String(pathname || "").split("?")[0].replace(/\/+$/, "") || "/";
-  if (path === "/connexion") return "/login";
-  if (KNOWN_ROUTES.includes(path)) return path;
-  if (path.startsWith("/app/")) return path;
-  return "/";
-}
-
-function normalizeHash(hash) {
-  return normalizePath(String(hash || "").replace(/^#/, ""));
-}
+const PUBLIC_PATHS = {
+  "/": "/",
+  "/login": "/connexion/",
+  "/connexion": "/connexion/",
+  "/register": "/inscription/",
+  "/inscription": "/inscription/",
+};
 
 /**
- * Chemin courant de l'application.
- * Priorité au hash ; à défaut on relit le pathname (utile si le site est
- * servi derrière un serveur qui réécrit déjà les URLs).
+ * Normalise un chemin public ou d'espace vers l'URL réellement servie.
+ * @param {string} pathname
  * @returns {string}
  */
-function currentPath() {
-  const hash = window.location.hash;
-  if (hash && hash.length > 1) return normalizeHash(hash);
+function normalizePath(pathname) {
+  let path = String(pathname || "").split("?")[0].split("#")[0] || "/";
+  if (path.length > 1) path = path.replace(/\/+$/, "");
+  if (PUBLIC_PATHS[path]) return PUBLIC_PATHS[path];
 
-  const pathname = window.location.pathname || "/";
-  const workspace = parseWorkspacePath(pathname);
-  if (workspace) return pathname;
-  if (pathname === "/login" || pathname === "/connexion") return "/login";
+  const legacy = parseWorkspacePath(path);
+  if (legacy) return workspacePath(legacy.role, legacy.page);
+
+  if (path.startsWith("/profil/") || path.startsWith("/administration")) {
+    return path + (/\/$/.test(path) ? "" : "/");
+  }
   return "/";
 }
 
-/** Abonnement aux changements de route. @param {(path:string)=>void} cb */
-function subscribeRoute(cb) {
-  const handler = () => cb(currentPath());
-  window.addEventListener("hashchange", handler);
-  window.addEventListener("popstate", handler);
-  return () => {
-    window.removeEventListener("hashchange", handler);
-    window.removeEventListener("popstate", handler);
-  };
+/** Chemin courant (pathname réel du document). */
+function currentPath() {
+  return normalizePath(window.location.pathname || "/");
+}
+
+/** Ancien abonnement SPA : conservé comme API inerte pour les appelants. */
+function subscribeRoute() {
+  return () => {};
 }
 
 /**
- * Navigation programmatique (équivalent du `navigateTo` React).
- * @param {string} path ex. "/login" ou "/app/demandeur/dossiers"
+ * Navigation par chargement de document.
+ * @param {string} path
  */
 function navigateTo(path) {
-  const target = normalizePath(path);
-  if (currentPath() === target) return;
-  window.location.hash = "#" + target;
+  const raw = String(path || "/");
+  const cut = raw.indexOf("?");
+  const base = cut === -1 ? raw : raw.slice(0, cut);
+  const query = cut === -1 ? "" : raw.slice(cut);
+  const target = normalizePath(base) + query;
+  if (currentPath() + (window.location.search || "") === target) return;
+  window.location.assign(target);
 }
 
 /** Défilement doux vers une section de la page d'accueil. */

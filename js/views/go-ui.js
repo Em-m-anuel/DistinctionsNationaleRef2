@@ -18,11 +18,17 @@ function goCard(o) {
   </section>`;
 }
 function goKpis(items) {
-  return `<div class="kpi-strip">${(items || []).map((k) => `<button type="button" class="kpi"${k.page ? ` data-action="ws-page" data-page="${k.page}"` : ""}${k.filter != null ? ` data-cf-action="filter" data-value="${esc(k.filter)}"` : ""}>
+  return `<div class="kpi-strip">${(items || []).map((k) => {
+    const attrs = k.page && k.filter == null
+      ? ` href="${typeof workspacePath === "function" ? workspacePath(cfRole(), k.page) : "/"}" data-page="${k.page}"`
+      : ` type="button"${k.filter != null ? ` data-cf-action="filter" data-value="${esc(k.filter)}"` : ""}${k.page ? ` data-page="${k.page}"` : ""}`;
+    const tag = attrs.startsWith(" href") ? "a" : "button";
+    return `<${tag} class="kpi"${attrs}>
     <div class="kpi-label">${esc(k.label)}</div>
     <div class="kpi-value">${esc(String(k.count != null ? k.count : (k.value != null ? k.value : "—")))}</div>
     <div class="kpi-note">${esc(k.note || "")}</div>
-  </button>`).join("")}</div>`;
+  </${tag}>`;
+  }).join("")}</div>`;
 }
 function goChips(items, active, opts) {
   opts = opts || {};
@@ -104,10 +110,12 @@ function goAgeDays(fr) {
   return 0;
 }
 function goBtn(label, page, cls) {
-  return `<button type="button" class="btn ${cls || "btn-secondary"}" data-action="ws-page" data-page="${page}">${label}</button>`;
+  const href = typeof workspacePath === "function" ? workspacePath(cfRole(), page) : "/";
+  return `<a class="btn ${cls || "btn-secondary"}" href="${href}" data-page="${page}">${label}</a>`;
 }
 function goLink(label, page, cls) {
-  return `<button type="button" class="btn ${cls || "btn-ghost btn-sm"}" data-action="ws-page" data-page="${page}">${label}</button>`;
+  const href = typeof workspacePath === "function" ? workspacePath(cfRole(), page) : "/";
+  return `<a class="btn ${cls || "btn-ghost btn-sm"}" href="${href}" data-page="${page}">${label}</a>`;
 }
 function goPlural(n, one, many) {
   return n + " " + (n > 1 ? many : one);

@@ -688,8 +688,10 @@ window.GO = (function () {
   /* Onglets avec indicateur glissant */
   function tabs(root, onChange) {
     const list = $('[role=tablist]', root);
+    if (!list) return;
     const ink = $('.tab-ink', list);
     const btns = $$('[role=tab]', list);
+    if (!btns.length) return;
     const place = b => { if (ink) { ink.style.width = b.offsetWidth + 'px'; ink.style.transform = `translateX(${b.offsetLeft - 4}px)`; } };
     const sel = (b, focus) => {
       btns.forEach(x => { const on = x === b; x.setAttribute('aria-selected', on); x.tabIndex = on ? 0 : -1; });
@@ -754,7 +756,10 @@ window.GO = (function () {
   function navSections() {
     const views = role().views;
     return NAV.map(sec => {
-      const pages = sec.pages.filter(p => views.includes(p.view) && (!p.can || can(p.can)));
+      // Une page n'est proposée que si l'action requise est réellement
+      // autorisée pour le rôle connecté (même règle que le rendu).
+      const granted = k => (typeof GO.can === 'function' ? GO.can(k) : can(k));
+      const pages = sec.pages.filter(p => views.includes(p.view) && (!p.can || granted(p.can)));
       if (!pages.length) return null;
       return Object.assign({}, sec, {
         pages, href: '#/' + pages[0].view,

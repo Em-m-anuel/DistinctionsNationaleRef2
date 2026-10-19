@@ -169,8 +169,24 @@
     return `<div class="paper-wrap"><article class="paper ${scan ? 'is-scan' : ''}" aria-label="${esc(doc.title)}">${inner}
       <div class="paper-foot"><span>${scan ? 'Copie numérisée' : 'Document GAB-ORIENT'} · ${esc(doc.dossier)}</span><span>Page 1 / ${doc.pages || 1}</span></div></article></div>`;
   }
+  // Document dont le dossier n'est pas dans le périmètre du profil : on
+  // affiche sa fiche, sans reconstituer une pièce que l'on ne peut pas voir.
+  const orphanPaper = doc => `<div class="paper-wrap"><article class="paper" aria-label="${esc(doc.title)}">
+      <div class="p-title">${esc(doc.title)}</div>
+      <div class="p-obj"><b>Référence</b>${esc(doc.number || doc.id)}</div>
+      <div class="p-obj"><b>Dossier rattaché</b>${esc(doc.dossier || 'aucun')}</div>
+      <div class="p-obj"><b>Type</b>${esc((D.docTypes && D.docTypes[doc.type]) || doc.type || '—')}</div>
+      <div class="p-obj"><b>Date</b>${fmtDate(doc.date, 'short')}</div>
+      <div class="p-obj"><b>Expéditeur</b>${esc(doc.from || '—')}</div>
+      <div class="alert alert-info" style="margin-top:16px">${icon('info')}<div><strong>Dossier non accessible</strong>
+        <p style="margin-top:4px">Le dossier rattaché à ce document ne fait pas partie du périmètre de votre profil. Sa copie et ses pièces ne sont pas affichées.</p></div></div>
+      <div class="paper-foot"><span>Document GAB-ORIENT</span><span>Page 1 / ${doc.pages || 1}</span></div>
+    </article></div>`;
+
   const paperFor = doc => {
-    const d = GO.getDossier(doc.dossier), o = GO.org(d.org), a = GO.authority(d.authority);
+    const d = doc.dossier ? GO.getDossier(doc.dossier) : null;
+    if (!d) return orphanPaper(doc);
+    const o = GO.org(d.org), a = GO.authority(d.authority);
     const f = doc.file || {};
     if (f.dataUrl) {
       const type = f.type || '';
@@ -366,7 +382,9 @@
   }
 
   async function renum(doc) {
-    const d = GO.getDossier(doc.dossier), o = GO.org(d.org);
+    const d = GO.getDossier(doc.dossier);
+    if (!d) { GO.toast('error', 'Dossier non accessible', 'La demande de numérisation ne peut pas être enregistrée.'); return; }
+    const o = GO.org(d.org);
     const ok = await GO.confirmDialog({ title: 'Demander une nouvelle numérisation ?', tone: 'yellow', icon: 'refresh', confirm: 'Envoyer la demande',
       message: `<p>${esc(o.name)} sera invité à transmettre de nouveau « ${esc(doc.title)} » dans un format lisible.</p>` });
     if (!ok) return;

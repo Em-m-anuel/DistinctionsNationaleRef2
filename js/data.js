@@ -415,31 +415,63 @@ function isDemoPage(value) {
 /* ----------------------------- Navigation ----------------------------- */
 
 /**
- * Lit une URL d'espace connecté. L'original utilisait le chemin
- * (`/app/<role>/<page>`) ; la version statique utilise le hash
- * (`#/app/<role>/<page>`), ce qui permet d'ouvrir le site directement
- * depuis le système de fichiers, sans serveur.
+ * Lit une URL d'espace connecté.
+ *
+ * URL servies par le site multipage :
+ *   /profil/<famille>/<page>/         (demandeur, récipiendaire, secrétariat,
+ *                                      direction, service, régie)
+ *   /administration/<page>/           (administrateur)
+ *
+ * Les anciennes URL `#/app/<rôle>/<page>` restent comprises pour ne pas
+ * casser les liens et favoris existants ; elles sont redirigées par le
+ * routeur vers la nouvelle page.
+ *
  * @param {string} path
- * @returns {{ role: DemoRole, page: string } | null}
+ * @returns {{ role: DemoRole, page: string, family: string } | null}
  */
 function parseWorkspacePath(path) {
-  const parts = String(path || "").split("/").filter(Boolean);
-  if (parts[0] !== "app") return null;
-  const requested = parts[1];
-  let role = isDemoRole(requested) ? requested : null;
-  if (!role) {
-    // Rétrocompatibilité : les anciens liens "secretariat" et "service"
-    // pointent vers le premier sous-rôle, qui partage la même navigation.
-    if (requested === "secretariat") role = "secretariat_ministre";
-    else if (requested === "service") role = "service_chef";
-    else return null;
+  const clean = String(path || "").split("?")[0].split("#")[0];
+  const parts = clean.split("/").filter(Boolean);
+
+  // Anciennes URL conservées en lecture seule.
+  if (parts[0] === "app") {
+    const requested = parts[1];
+    let role = isDemoRole(requested) ? requested : null;
+    if (!role) {
+      if (requested === "secretariat") role = "secretariat_ministre";
+      else if (requested === "service") role = "service_chef";
+      else return null;
+    }
+    return {
+      role,
+      page: isDemoPage(parts[2]) ? parts[2] : "overview",
+      family: (typeof siteFamilyOf === "function" && siteFamilyOf(role)) || "service",
+    };
   }
-  return {
-    role,
-    page: isDemoPage(parts[2]) ? parts[2] : "overview",
-  };
+
+  // Nouvelle arborescence par famille fonctionnelle.
+  if (parts[0] === "administration") {
+    const page = typeof siteCanonicalPage === "function" ? (siteCanonicalPage("admin", parts[1]) || "overview") : "overview";
+    return { role: "admin", page, family: "admin" };
+  }
+  if (parts[0] === "profil" && parts[1] && typeof SITE_FAMILIES !== "undefined" &&
+      (SITE_FAMILIES[parts[1]] || SITE_FAMILY_DIRS[parts[1]])) {
+    const family = SITE_FAMILIES[parts[1]] ? parts[1] : SITE_FAMILY_DIRS[parts[1]];
+    const role = siteFamilyRepresentativeRole(family);
+    const page = siteCanonicalPage(family, parts[2]) || "overview";
+    return { role, page, family };
+  }
+  return null;
 }
 
+/**
+ * URL publique d'une page d'espace.
+ * @param {string} role rôle technique OU nom de famille
+ * @param {string} [page]
+ */
 function workspacePath(role, page = "overview") {
-  return `/app/${role}/${page}`;
+  return typeof sitePagePath === "function"
+    ? sitePagePath(role, page)
+    : `/app/${role}/${page}`;
 }
+

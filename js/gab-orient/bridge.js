@@ -214,8 +214,16 @@
   }
 
   function mapDocuments(store, refs) {
+    // Les documents du magasin portent l'identifiant interne du dossier
+    // (« D-001 ») ; les vues et `getDossier()` attendent la référence
+    // administrative (« DNG-2026-001 »). On rétablit la correspondance.
+    const refOf = new Map();
+    (store.dossiers || []).forEach(d => {
+      if (d.id) refOf.set(d.id, d.ref);
+      if (d.ref) refOf.set(d.ref, d.ref);
+    });
     const fromStore = (store.documents || []).filter(x => refs.has(x.dossierId) || refs.has(x.dossier)).map(x => ({
-      id: x.id, dossier: x.dossierId || x.dossier, title: x.name, type: x.origin === 'généré' ? 'sortant' : 'entrant',
+      id: x.id, dossier: refOf.get(x.dossierId || x.dossier) || x.dossierId || x.dossier, title: x.name, type: x.origin === 'généré' ? 'sortant' : 'entrant',
       kind: /ordre/i.test(x.name || '') ? 'transmission' : (/décision|decision/i.test(x.name || '') ? 'decision' : 'piece'),
       date: isoDate(x.date), from: x.origin || '—', state: x.signStatus === 'SIGNE_SCELLE' ? 'vise' : (x.signStatus === 'SIGNE_VISUELLEMENT' ? 'attente_visa' : 'enregistre'),
       number: x.numero || '', internal: false, pages: x.pages || 1,
@@ -776,17 +784,24 @@
     if (!root || !root.querySelectorAll) return;
     root.querySelectorAll('a[href^="#/"]').forEach(a => {
       const href = a.getAttribute('href') || '';
-      if (href.indexOf('#/app/') === 0) return;
       const parts = href.replace(/^#\//, '').split('?')[0].split('/');
       const view = parts[0];
       const id = parts[1];
       if (view === 'nouveau') {
-        a.setAttribute('href', '#' + (typeof workspacePath === 'function' ? workspacePath(role, 'new-dossier') : '/app/' + role + '/new-dossier'));
+        a.setAttribute('href', typeof workspacePath === 'function' ? workspacePath(role, 'new-dossier') : '/profil/' + role + '/new-dossier/');
         return;
       }
       const page = workspacePage(view, role);
-      const path = typeof workspacePath === 'function' ? workspacePath(role, page) : '/app/' + role + '/' + page;
-      a.setAttribute('href', '#' + path);
+      const path = typeof workspacePath === 'function' ? workspacePath(role, page) : '/profil/' + role + '/' + page + '/';
+      const current = typeof parseWorkspacePath === 'function' ? parseWorkspacePath(window.location.pathname) : null;
+      // Un dossier précis reste un état de la page « dossiers » : on garde
+      // l'URL de la page et on ouvre le tiroir sans quitter le document.
+      if (id && current && current.family && page === current.page && (view === 'dossiers' || view === 'courriers' || view === 'ceremonies')) {
+        a.setAttribute('href', path);
+        a.setAttribute('data-go-ref', id);
+        return;
+      }
+      a.setAttribute('href', path);
       if (id && (view === 'dossiers' || view === 'courriers' || view === 'ceremonies')) a.setAttribute('data-go-ref', id);
     });
   }
@@ -804,25 +819,46 @@
     return (fromLast && fromLast.role) || '';
   }
 
-  function protoToAppHash(hash, role) {
+  function protoTarget(hash, role) {
     const h = String(hash || '');
-    if (!role || h.indexOf('#/app/') === 0) return h;
     const m = /^#\/([a-z0-9_-]+)(?:\/([^/?]*))?(?:\?(.*))?$/i.exec(h);
-    if (!m) return h;
-    const page = workspacePage(m[1], role);
-    const path = typeof workspacePath === 'function' ? workspacePath(role, page) : '/app/' + role + '/' + page;
-    return '#' + path;
+    if (!m || !role) return null;
+    return { view: m[1], id: m[2] || null, query: m[3] || '' };
+  }
+
+  function protoToAppHash(hash, role) {
+    const target = protoTarget(hash, role);
+    if (!target) return hash;
+    const page = workspacePage(target.view, role);
+    const path = typeof workspacePath === 'function' ? workspacePath(role, page) : '/profil/' + role + '/' + page + '/';
+    return path;
   }
 
   function patchSetHash() {
     if (!window.GO || typeof GO.setHash !== 'function' || GO.setHash._frontii) return;
     const orig = GO.setHash;
     GO.setHash = function (hash) {
-      const mapped = protoToAppHash(hash, liveRole());
+      const role = liveRole();
+      const target = protoTarget(hash, role);
+      if (!target || !role) { orig(hash); return; }
+      const page = workspacePage(target.view, role);
+      const current = typeof parseWorkspacePath === 'function' ? parseWorkspacePath(window.location.pathname) : null;
+      const samePage = current && current.family && page === current.page;
+      if (!samePage) {
+        // Changement de page métier : navigation réelle. La référence du
+        // dossier est conservée dans l'URL (?ref=…) pour être rouverte
+        // au chargement de la page cible.
+        const base = typeof workspacePath === 'function' ? workspacePath(role, page) : '/';
+        g.location.assign(target.id ? base + '?ref=' + encodeURIComponent(target.id) : base);
+        return;
+      }
+      // Sous-état d'une même page : paramètre d'URL, sans rechargement.
+      const params = typeof URLSearchParams === 'function' ? new URLSearchParams(target.query || '') : null;
+      if (target.id) params && params.set('ref', target.id);
+      const qs = params ? params.toString() : '';
       try {
-        if (g.history && g.history.replaceState) g.history.replaceState(null, '', mapped);
-        else orig(mapped);
-      } catch (e) { orig(mapped); }
+        g.history.replaceState(null, '', g.location.pathname + (qs ? '?' + qs : ''));
+      } catch (e) { /* état interne seulement */ }
       rememberAppHash();
     };
     GO.setHash._frontii = true;
@@ -850,28 +886,23 @@
     patchSetHash();
     g.addEventListener('hashchange', function () {
       const h = (g.location && g.location.hash) || '';
-      if (h.indexOf('#/app/') === 0) { rememberAppHash(); return; }
-      if (!h || h === '#' || h === '#/' || h.indexOf('#/login') === 0 || h.indexOf('#/register') === 0) return;
-      const m = /^#\/([a-z0-9_-]+)(?:\/([^/?]*))?(?:\?(.*))?$/i.exec(h);
-      if (!m) return;
-      const view = m[1], id = m[2] || null;
-      const role = liveRole();
-      if (!role) return;
-      const restore = g.__goLastAppHash || protoToAppHash(h, role);
-      if (g.history && g.history.replaceState) {
-        try { g.history.replaceState(null, '', restore); } catch (e) {
-          if (g.location) g.location.hash = restore;
-        }
-      } else if (g.location) {
-        g.location.hash = restore;
-      }
-      rememberAppHash();
-      if (id && (view === 'dossiers' || view === 'courriers' || view === 'documents')) {
-        openProtoTarget(view, id);
+      if (!h || h === '#' || h === '#/') return;
+      if (h.indexOf('#/login') === 0 || h.indexOf('#/register') === 0) {
+        g.location.assign(h.indexOf('#/register') === 0 ? '/inscription/' : '/connexion/');
         return;
       }
-      const page = workspacePage(view, role);
-      if (typeof cfGo === 'function') cfGo(role, page);
+      if (h.indexOf('#/app/') === 0) { rememberAppHash(); return; }
+      const target = protoTarget(h, liveRole());
+      const role = liveRole();
+      if (!target || !role) return;
+      const page = workspacePage(target.view, role);
+      const current = typeof parseWorkspacePath === 'function' ? parseWorkspacePath(g.location.pathname) : null;
+      if (current && current.family && page === current.page) {
+        if (target.id && (target.view === 'dossiers' || target.view === 'courriers' || target.view === 'documents')) openProtoTarget(target.view, target.id);
+        try { g.history.replaceState(null, '', g.location.pathname + (target.id ? '?ref=' + encodeURIComponent(target.id) : '')); } catch (e) { /* ignore */ }
+        return;
+      }
+      if (typeof cfGo === 'function') cfGo(role, page, target.id ? { ref: target.id } : null);
     }, true);
     if (typeof document !== 'undefined' && document.addEventListener && !g.__goRefBound) {
       g.__goRefBound = true;
@@ -914,5 +945,6 @@
   expose('goHydrate', hydrate);
   expose('goInstallHosts', installHosts);
   expose('goPage', function (role, page) { return goRenderPage(role, page); });
+  expose('goOpenRef', openProtoTarget);
   expose('goPageFor', workspacePage);
 })(typeof window !== 'undefined' ? window : globalThis);

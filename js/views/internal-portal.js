@@ -108,7 +108,9 @@ function ipDenied(text) {
 
 function ipStat(label, value, sub, page, ico) {
   if (typeof portalStat === "function") return portalStat(label, value, sub, ico || "folder", page || "");
-  return `<button type="button" data-action="ws-page" data-page="${page || "overview"}" class="portal-stat"><small>${esc(label)}</small><strong>${esc(String(value))}</strong><span>${esc(sub || "")}</span></button>`;
+  const target = page || "overview";
+  const href = typeof workspacePath === "function" ? workspacePath(cfRole(), target) : "/";
+  return `<a href="${href}" data-page="${target}" class="portal-stat"><small>${esc(label)}</small><strong>${esc(String(value))}</strong><span>${esc(sub || "")}</span></a>`;
 }
 
 function ipPaper(title, body, eyebrow) {
@@ -126,11 +128,12 @@ function ipActivity(items, emptyText) {
 }
 
 function ipActivityRow(page, title, sub, attrs, badge) {
-  return `<button type="button" class="portal-activity-row" data-action="ws-page" data-page="${page}" ${attrs || ""}>
+  const href = typeof workspacePath === "function" ? workspacePath(cfRole(), page) : "/";
+  return `<a class="portal-activity-row" href="${href}" data-page="${page}" ${attrs || ""}>
     <span class="portal-activity-mark"></span>
     <span><strong>${esc(title)}</strong><small>${esc(sub)}</small></span>
     ${badge || (typeof icon === "function" ? icon("arrowRight", "size-4") : "")}
-  </button>`;
+  </a>`;
 }
 
 function ipApplicantName(id) {
@@ -558,7 +561,7 @@ function ipTabs(role, page) {
   const secs = (G && typeof G.navSections === "function") ? G.navSections() : [];
   const currentView = (typeof goViewFor === "function" && goViewFor(role, page)) || page;
   const unread = typeof cfUnread === "function" ? cfUnread() : 0;
-  const pathOf = (pg) => (typeof workspacePath === "function" ? "#" + workspacePath(role, pg) : "#/app/" + role + "/" + pg);
+  const pathOf = (pg) => (typeof workspacePath === "function" ? workspacePath(role, pg) : "/profil/" + role + "/" + pg);
   return secs.map((sec) => {
     const pages = (sec.pages || []).map((p) => ({ page: viewToPage(p.view, role), view: p.view, label: p.label }));
     if (!pages.length) return "";
@@ -567,10 +570,10 @@ function ipTabs(role, page) {
     const cnt = sec.count ? `<span class="nav-count ${unread ? "" : "is-zero"}">${unread || 0}</span>` : "";
     const menu = pages.length > 1
       ? `<button class="nav-caret" type="button" data-cf-action="menu" data-menu="${sec.key}" aria-expanded="${open}" aria-haspopup="true" aria-label="Autres accès : ${esc(sec.label)}">${goIco("chevron-down")}</button>
-          ${open ? `<div class="dd-menu" id="nav-${sec.key}">${pages.map((p) => `<button class="menu-item" type="button" data-action="ws-page" data-page="${p.page}">${goIco(p.view === "nouveau" ? "plus" : sec.icon)}${esc(p.label)}</button>`).join("")}</div>` : ""}`
+          ${open ? `<div class="dd-menu" id="nav-${sec.key}">${pages.map((p) => `<a class="menu-item" href="${pathOf(p.page)}" data-page="${p.page}"${p.page === page ? ' aria-current="page"' : ""}>${goIco(p.view === "nouveau" ? "plus" : sec.icon)}${esc(p.label)}</a>`).join("")}</div>` : ""}`
       : "";
     return `<li class="nav-item${active ? " is-current" : ""}">
-      <a class="nav-link" href="${pathOf(pages[0].page)}" data-action="ws-page" data-page="${pages[0].page}" ${active ? 'aria-current="page"' : ""}>${goIco(sec.icon)}${esc(sec.label)}${cnt}</a>${menu}
+      <a class="nav-link" href="${pathOf(pages[0].page)}" data-page="${pages[0].page}" ${active ? 'aria-current="page"' : ""}>${goIco(sec.icon)}${esc(sec.label)}${cnt}</a>${menu}
     </li>`;
   }).join("");
 }
@@ -581,11 +584,11 @@ function ipHead(role, page) {
   const name = u ? u.prenom + " " + u.nom : conf.shortLabel;
   const initials = esc((name || "?").split(" ").map((x) => x[0]).join("").slice(0, 2).toUpperCase());
   const unread = typeof cfUnread === "function" ? cfUnread() : 0;
-  const overview = typeof workspacePath === "function" ? "#" + workspacePath(role, "overview") : "#/app/" + role + "/overview";
+  const overview = typeof workspacePath === "function" ? workspacePath(role, "overview") : "/profil/" + role + "/";
   return `<header class="site-header sticky" id="site-header">
     <div class="container hdr-top">
       <button class="icon-btn nav-toggle" type="button" data-cf-action="mobile" aria-label="Ouvrir le menu de navigation" aria-expanded="${!!cfState.mobile}">${goIco("menu")}</button>
-      <a class="brand" href="${overview}" data-action="ws-page" data-page="overview" aria-label="MEDITRA, accueil de l’espace">
+      <a class="brand" href="${overview}" data-page="overview" aria-label="MEDITRA, accueil de l’espace">
         ${typeof meditraBrand === "function" ? meditraBrand({ size: 36, sub: "République Gabonaise" }) : `<span class="md-brand-name">MEDITRA</span>`}
       </a>
       <button class="search-trigger" type="button" data-cf-action="search" aria-label="Rechercher (raccourci Ctrl+K)">
@@ -612,7 +615,7 @@ function ipHead(role, page) {
       <div class="container"><ul id="nav-list">${ipTabs(role, page)}</ul></div>
     </nav>
     ${cfState.search && typeof cfSearchPalette === "function" ? cfSearchPalette() : ""}
-    ${cfState.mobile ? `<div class="mobile-nav" id="mobile-nav"><div class="mobile-nav-list">${((typeof ipNav === "function" && ipNav(role)) || []).map((it) => (it.children || [{ page: it.page, label: it.label }]).map((c) => `<button type="button" data-action="ws-page" data-page="${c.page}">${esc(c.label)}</button>`).join("")).join("")}<button type="button" data-action="nav" data-path="/">Accueil public</button></div></div>` : ""}
+    ${cfState.mobile ? `<div class="mobile-nav" id="mobile-nav"><div class="mobile-nav-list">${((typeof ipNav === "function" && ipNav(role)) || []).map((it) => (it.children || [{ page: it.page, label: it.label }]).map((c) => `<a href="${(typeof workspacePath === "function" ? workspacePath(role, c.page) : "/profil/" + role + "/" + c.page)}"${c.page === page ? ' aria-current="page"' : ""}>${esc(c.label)}</a>`).join("")).join("")}<a href="/">Accueil public</a></div></div>` : ""}
   </header>`;
 }
 

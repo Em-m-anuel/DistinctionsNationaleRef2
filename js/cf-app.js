@@ -18,11 +18,32 @@ function cfGo(role, page, extra) {
   if (extra && extra.id) cfState.selected = extra.id;
   if (extra && extra.tab) cfState.tab = extra.tab;
   cfState.menu = null; cfState.notices = false; cfState.account = false; cfState.search = false; cfState.more = false; cfState.mobile = false;
-  const path = workspacePath(role, page);
-  if (typeof currentPath === "function" && currentPath() === path) { cfPaint(); return; }
-  navigateTo(path);
+  const canonical = typeof siteCanonicalPage === "function" ? siteCanonicalPage(role, page) : page;
+  if (!canonical) {
+    // Page absente de la famille : on ne renvoie pas l'utilisateur vers un
+    // écran sans rapport. Si un dossier est référencé, il est ouvert ici.
+    if (extra && extra.ref && typeof goOpenRef === "function") {
+      try { goOpenRef("dossiers", extra.ref); } catch (error) { /* tiroir indisponible */ }
+    }
+    cfPaint();
+    return;
+  }
+  const target = canonical;
+  const path = workspacePath(role, target);
+  const ref = extra && extra.ref ? "?ref=" + encodeURIComponent(extra.ref) : "";
+  if (typeof currentPath === "function" && currentPath() === path) {
+    // Déjà sur la page : la référence ouvre directement le dossier.
+    if (extra && extra.ref && typeof goOpenRef === "function") {
+      try { goOpenRef("dossiers", extra.ref); } catch (error) { /* tiroir indisponible */ }
+    }
+    cfPaint(); return;
+  }
+  navigateTo(path + ref);
 }
 function cfPaint() {
+  // Site multipage : seuls le contenu et les panneaux sont repeints ;
+  // la page (URL, en-tête, navigation) ne change pas.
+  if (typeof siteRepaintWorkspace === "function") { siteRepaintWorkspace(); return; }
   const ws = typeof parseWorkspacePath === "function" ? parseWorkspacePath(typeof currentPath === "function" ? currentPath() : "") : null;
   if (!ws) return;
   const root = document.getElementById("app");
@@ -316,8 +337,12 @@ function cfExplain(t) { return `<p class="cf-explain">${icon("info", "size-4")}<
 function cfBtn(label, action, props, cls) {
   return `<button type="button" data-cf-action="${action}" ${props || ""} class="cf-btn ${cls || ""}">${label}</button>`;
 }
+function cfHref(page) {
+  const role = (typeof cfState !== "undefined" && cfState.spaceRole) || (typeof cfRole === "function" ? cfRole() : "");
+  return typeof workspacePath === "function" ? workspacePath(role, page) : "#";
+}
 function cfLink(label, page, cls, extra) {
-  return `<button type="button" data-action="ws-page" data-page="${page}" ${extra || ""} class="cf-link ${cls || ""}">${label}${icon("arrowRight", "size-4")}</button>`;
+  return `<a href="${cfHref(page)}" data-page="${page}" ${extra || ""} class="cf-link ${cls || ""}">${label}${icon("arrowRight", "size-4")}</a>`;
 }
 
 function cfUnread() { return cfMyNotices().filter((n) => !n.read).length; }
@@ -344,7 +369,7 @@ function cfTop(role, page) {
   const accent = role === "demandeur" ? cfBtn("Nouveau dossier " + icon("plus", "size-4"), "go", "data-page=\"new-dossier\"", "cf-accent") : "";
   return `<header class="cf-top ws-header sticky top-0 z-50">
     <div class="cf-top-inner">
-      <button type="button" data-action="nav" data-path="/" class="cf-brand">${emblem({ size: 36 })}<span><strong>Distinctions Nationales</strong><small>République Gabonaise</small></span></button>
+      <button type="button" data-action="nav" data-path="${sitePublicPath("home")}" class="cf-brand">${emblem({ size: 36 })}<span><strong>Distinctions Nationales</strong><small>République Gabonaise</small></span></button>
       ${employe ? `<a class="cf-follow" data-action="ws-page" data-page="overview">Suivre ma demande</a>` : `<nav class="cf-nav ws-tabs" aria-label="Menu du profil">${nav}</nav>${accent}`}
       <div class="cf-tools">
         <button type="button" class="cf-icon-btn cf-mobile-only" data-cf-action="mobile" aria-label="Menu">${icon("menu", "size-5")}</button>
@@ -382,14 +407,14 @@ function cfSearchPalette() {
   const rows = cfSearch(cfState.searchQ);
   return `<div class="cf-palette" role="dialog" aria-label="Recherche">
     <label class="cf-palette-field">${icon("search", "size-4")}<input data-cf-search-global type="search" placeholder="Dossier, demandeur, récipiendaire, CNI…" value="${esc(cfState.searchQ)}" autofocus /></label>
-    <div class="cf-palette-list">${rows.length ? rows.map((r) => `<button type="button" data-cf-action="search-go" data-page="${r.page}" data-id="${esc(r.id)}"><small>${esc(r.kind)}</small>${esc(r.label)}</button>`).join("") : `<p class="cf-muted">Saisissez au moins deux caractères.</p>`}</div>
+    <div class="cf-palette-list">${rows.length ? rows.map((r) => `<a data-cf-action="search-go" href="${cfHref(r.page)}" data-page="${r.page}" data-id="${esc(r.id)}"><small>${esc(r.kind)}</small>${esc(r.label)}</a>`).join("") : `<p class="cf-muted">Saisissez au moins deux caractères.</p>`}</div>
   </div>`;
 }
 
 function cfBanner(role, page, opts) {
   const o = opts || {};
   const title = o.title || cfPageTitle(role, page);
-  const crumbs = [`<button type="button" data-action="ws-page" data-page="overview">Accueil</button>`];
+  const crumbs = [`<a href="${cfHref("overview")}" data-page="overview">Accueil</a>`];
   if (page !== "overview") crumbs.push(`<span>${esc(title)}</span>`);
   const actions = o.actions || "";
   const hero = page === "overview" ? `<section class="ws-hero ws-appear"><div class="cf-hero-copy"><p class="cf-greeting">Espace ${esc((ROLE_CONFIGS[role] || {}).shortLabel || role)}</p><h1>${esc(title)}</h1><p class="cf-lead">${esc((ROLE_CONFIGS[role] || {}).description || "")}</p></div></section>` : "";
@@ -1530,13 +1555,13 @@ function cfAction(action, el, role, page) {
       cfMarkRead(el.dataset.id);
       cfState.notices = false;
       if (el.dataset.ref) cfState.selected = (cfFindDossier(el.dataset.ref) || {}).id || el.dataset.ref;
-      cfGo(role, el.dataset.page || "notifications");
+      cfGo(role, el.dataset.page || "notifications", el.dataset.ref ? { ref: el.dataset.ref } : null);
       return true;
     }
     case "logout":
       if (typeof leavePresentation === "function") leavePresentation();
       if (typeof signOut === "function") signOut();
-      navigateTo("/login"); return true;
+      navigateTo(sitePublicPath("login")); return true;
     case "switch": {
       if (typeof leavePresentation === "function") leavePresentation();
       if (typeof enterPresentation === "function") enterPresentation(el.dataset.role, el.dataset.email);
