@@ -1,10 +1,15 @@
 /* Jeu de données LOCAL de présentation : jamais une réponse d'API ni une session.
    Activation limitée à file://, localhost et l'aperçu Arena sans endpoint auth.
    Les valeurs sont synthétiques et n'ont aucune valeur administrative. */
+// Le mode présentation reste réservé aux essais locaux : aucune session,
+// aucune donnée réelle. Il est accepté sur localhost, sur un aperçu Arena,
+// et sur un réseau privé (192.168.x.x, 10.x.x.x, 172.16-31.x.x) afin de
+// pouvoir tester depuis un téléphone sur le même Wi-Fi.
 const PRESENTATION_MODE = !AUTH_ENDPOINT && window.DN_PRESENTATION_MODE !== false && (
   window.DN_PRESENTATION_MODE === true || window.location.protocol === 'file:' ||
   ['localhost','127.0.0.1'].includes(window.location.hostname) ||
-  /\.e2b\.app$/.test(window.location.hostname)
+  /\.e2b\.app$/.test(window.location.hostname) ||
+  /^(10\.|127\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.)/.test(window.location.hostname)
 );
 const PRESENTATION_KEY = 'dn.presentation.profile';
 const DEMO_OTP_CODE = '246810';

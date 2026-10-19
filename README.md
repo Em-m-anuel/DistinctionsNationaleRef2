@@ -34,6 +34,9 @@ npm run build:pages    # node tools/build-pages.mjs
 Démarrage rapide : `/` (accueil) → `/connexion/` → « Explorer la
 démonstration » → choisir un des 14 profils fictifs.
 
+> **Test sur votre propre PC** (archive téléchargée, Windows/macOS/Linux,
+> téléphone sur le même Wi-Fi, dépannage) : voir **`TESTER_EN_LOCAL.md`**.
+
 > Les polices Google facultatives demandent une connexion Internet. Hors ligne, les polices de secours du système prennent le relais. Les illustrations SVG, le CSS et les scripts sont locaux.
 
 ## Arborescence
