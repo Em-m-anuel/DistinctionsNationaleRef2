@@ -7,7 +7,7 @@ const vm = require('node:vm');
 
 const root = path.resolve(__dirname, '..');
 const files = [
-  'js/icons.js', 'js/data.js', 'js/auth.js', 'js/demo-accounts.js', 'js/portal-demo.js', 'js/demo-store.js',
+  'js/site-config.js', 'js/icons.js', 'js/data.js', 'js/auth.js', 'js/demo-accounts.js', 'js/portal-demo.js', 'js/demo-store.js',
   'js/router.js', 'js/ui.js', 'js/views/home.js', 'js/registration.js', 'js/views/login.js',
   'js/views/workspace.js', 'js/views/portals.js', 'js/views/portal-extras.js', 'js/views/admin.js',
   'js/views/role-pages.js', 'js/views/shared.js', 'js/cf-store.js',
@@ -88,12 +88,17 @@ function as(email, role) {
   H.cfReset();
 }
 
-test('app.js peint renderWorkspace + goMountLive pour tous les espaces, y compris demandeur et récipiendaire', () => {
-  const src = fs.readFileSync(path.join(root, 'js/app.js'), 'utf8');
-  assert.match(src, /goMountLive/);
-  assert.match(src, /renderWorkspace\(workspace\.role/);
-  assert.doesNotMatch(src, /isPortal/);
-  assert.doesNotMatch(src, /renderPortal\(workspace\.role/);
+test('app.js monte les pages réelles et délègue le contenu à renderWorkspace', () => {
+  const app = fs.readFileSync(path.join(root, 'js/app.js'), 'utf8');
+  assert.match(app, /siteMountWorkspace\(\)/);
+  assert.match(app, /siteRepaintWorkspace\(\)/);
+  assert.doesNotMatch(app, /isPortal/);
+  assert.doesNotMatch(app, /renderPortal\(workspace\.role/);
+
+  const shell = fs.readFileSync(path.join(root, 'js/site/workspace-page.js'), 'utf8');
+  assert.match(shell, /cfBanner\(ctx\.role, ctx\.page/);
+  assert.match(shell, /cfContent\(ctx\.role, ctx\.page/);
+  assert.match(shell, /goMountLive\(/);
 });
 
 test('ipNav gouverne demandeur et récipiendaire', () => {

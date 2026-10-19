@@ -4,21 +4,25 @@ Conversion du dépôt [`Distinctions_Front`](https://github.com/Em-m-anuel/Disti
 
 ## Démarrage
 
-Ouvrir **`index.html` à la racine** dans un navigateur moderne : le portail fonctionne même en `file://`, sans installation, serveur, compilation ni dépendance JavaScript à l’exécution. La feuille **`css/app.css`** est déjà générée et incluse.
-
-Pour servir les fichiers sur un serveur local, au choix :
+**Le site doit être servi par un serveur HTTP** : c'est désormais un site
+multipage avec des URL réelles (`/profil/...`, `/administration/...`), qui ne
+fonctionnent pas en `file://`.
 
 ```sh
-cd Distinctions_Front
-python3 -m http.server 8000
+npm run serve          # python3 -m http.server 8000 --bind 0.0.0.0
 # puis http://localhost:8000
 ```
 
-ou, depuis le dossier qui contient `index.html` :
+Aucune compilation n'est nécessaire : **`css/app.css`** est déjà générée et
+les 72 pages HTML sont livrées. Pour les régénérer après une modification de
+`js/site-config.js` ou de la navigation :
 
 ```sh
-npx serve .
+npm run build:pages    # node tools/build-pages.mjs
 ```
+
+Démarrage rapide : `/` (accueil) → `/connexion/` → « Explorer la
+démonstration » → choisir un des 14 profils fictifs.
 
 > Les polices Google facultatives demandent une connexion Internet. Hors ligne, les polices de secours du système prennent le relais. Les illustrations SVG, le CSS et les scripts sont locaux.
 
@@ -31,20 +35,30 @@ Distinctions_Front/
 │   ├── app.css            # Feuille CSS compilée, directement utilisable
 │   └── theme.css          # Source modifiable (thème Tailwind v4 d’origine)
 ├── js/
-│   ├── app.js              # Point d’entrée et événements
+│   ├── app.js              # Amorçage d'une page (accueil, auth, espace)
+│   ├── site-config.js      # Familles, pages et URL (source unique)
+│   ├── site/               # routes, chrome partagé, montage des pages
+│   │   ├── routes.js
+│   │   ├── chrome.js
+│   │   └── workspace-page.js
 │   ├── auth.js             # Connexion, sessions et validation
 │   ├── data.js             # Données fictives historiques (six autres rôles)
 │   ├── portal-demo.js      # Données fictives cloisonnées et mode présentation
 │   ├── demo-store.js       # Magasin unique Demandeur (employés, distinctions, finance, cérémonies)
 │   ├── icons.js            # Tracés SVG des icônes
 │   ├── registration.js     # Frontière d’intégration inscription / OTP (sans API fictive)
-│   ├── router.js           # Navigation par hash
+│   ├── router.js           # Navigation réelle (location.assign)
 │   ├── ui.js               # Composants visuels en JS natif (HTML/SVG)
 │   └── views/
 │       ├── home.js         # Accueil public, carrousel, en-tête, pied
 │       ├── login.js        # Connexion commune, inscription guidée et OTP
 │       ├── portals.js      # Espaces entreprise / personnel, sans sidebar
 │       └── workspace.js    # Six autres profils et dépôt préexistant
+├── profil/               # 6 familles d'espaces métier (URL réelles)
+├── administration/       # Espace administrateur
+├── connexion/, inscription/
+├── tools/build-pages.mjs # Générateur des pages HTML
+├── css/site.css          # Compléments du site multipage
 ├── assets/                # Les 6 JPG de l’archive d’origine, conservés
 ├── react-original/        # Ancien projet React/Vite + src.zip + src extrait
 ├── package.json           # Outil de recompilation CSS seulement (facultatif)
@@ -76,7 +90,7 @@ La barre de lecture tricolore suit la hauteur réellement défilable de la page 
 | Espaces internes (11 profils) | `#/app/<role>/<page>` pour `secretariat_*`, `ministre`, `dgt`, `dr`, `service_*`, `regisseur` | Navigation et comportements historiques conservés, contenus fictifs étiquetés |
 | Espace administrateur | `#/app/admin/<page>` | Gestion de la plateforme, comptes internes, campagnes, journal d'audit, alertes |
 
-Le routage par hash fonctionne sans réécriture serveur ; `#/connexion` reste un alias de connexion. La connexion réelle n'est possible que si `window.DN_AUTH_ENDPOINT` est renseigné. Les deux nouveaux espaces n'utilisent **jamais** les données fictives comme solution de repli d'une API en échec : un compte réel voit un état « Données indisponibles » tant que les services métier ne sont pas raccordés. Un composant de chargement accessible est prévu pour le raccordement futur ; aucun faux délai de chargement n'est affiché en l'absence de requête. L'accès direct aux deux routes sans session ni profil de présentation affiche une invitation à se connecter. Les six autres espaces historiques restent inchangés et explicitement étiquetés « mode démonstration » ; leurs URL n'étaient pas sécurisées par le frontend d'origine et doivent être protégées par un vrai backend avant toute mise en production.
+Chaque page est un document HTML autonome et la navigation utilise de vrais liens ; les anciens favoris `#/app/...` sont redirigés une fois vers la nouvelle URL. La connexion réelle n'est possible que si `window.DN_AUTH_ENDPOINT` est renseigné. Les deux nouveaux espaces n'utilisent **jamais** les données fictives comme solution de repli d'une API en échec : un compte réel voit un état « Données indisponibles » tant que les services métier ne sont pas raccordés. Un composant de chargement accessible est prévu pour le raccordement futur ; aucun faux délai de chargement n'est affiché en l'absence de requête. L'accès direct aux deux routes sans session ni profil de présentation affiche une invitation à se connecter. Les six autres espaces historiques restent inchangés et explicitement étiquetés « mode démonstration » ; leurs URL n'étaient pas sécurisées par le frontend d'origine et doivent être protégées par un vrai backend avant toute mise en production.
 
 ### Parcours de présentation isolé
 

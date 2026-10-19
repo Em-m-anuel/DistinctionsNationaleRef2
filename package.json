@@ -7,7 +7,8 @@
     "css": "tailwindcss -i css/theme.css -o css/app.css --minify",
     "css:watch": "tailwindcss -i css/theme.css -o css/app.css --watch",
     "serve": "python3 -m http.server 8000 --bind 0.0.0.0",
-    "test": "node --test tests/*.cjs"
+    "test": "node --test tests/*.cjs",
+    "build:pages": "node tools/build-pages.mjs"
   },
   "devDependencies": {
     "@tailwindcss/cli": "4.1.17",

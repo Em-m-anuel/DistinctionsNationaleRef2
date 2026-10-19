@@ -793,17 +793,11 @@ function siteHeader(session) {
          <span class="flex h-9 w-9 items-center justify-center rounded-full bg-ink-50 text-[0.8125rem] font-semibold text-ink-700 ring-1 ring-line" title="${esc(session.email)}">${esc(session.email.slice(0, 1).toUpperCase())}</span>
          ${button({ variant: "ghost", size: "sm", html: "Se déconnecter", attrs: { "data-action": "signout" } })}
        </div>`
-    : button({
-        variant: "outline",
-        size: "sm",
-        className: "hidden h-10 px-4 sm:inline-flex",
-        html: homeUserIcon("size-4 text-republic-blue-600") + "Se connecter",
-        attrs: { "data-action": "nav", "data-path": "/login" },
-      });
+    : `<a class="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-line-strong bg-white px-4 text-[0.8125rem] font-medium text-ink-800 transition-colors hover:bg-canvas" href="/connexion/">${homeUserIcon("size-4 text-republic-blue-600")}Se connecter</a>`;
 
   const mobileAccount = session
     ? button({ variant: "secondary", fullWidth: true, html: "Se déconnecter", attrs: { "data-action": "signout" } })
-    : button({ fullWidth: true, html: homeUserIcon("size-4") + "Se connecter", attrs: { "data-action": "nav", "data-path": "/login" } });
+    : `<a class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-republic-green-600 px-4 py-3 text-[0.875rem] font-semibold text-white" href="/connexion/">${homeUserIcon("size-4")}Se connecter</a>`;
 
   const mobileNav = HOME_NAV.map(
     (item) => `
@@ -820,10 +814,10 @@ function siteHeader(session) {
     <header data-site-header class="home-site-header sticky top-0 z-50 bg-white/95 backdrop-blur-md transition-shadow duration-300 shadow-[0_1px_0_#E5EAF0]">
       ${homeArt("national-flow", "home-art--header-flow")}
       <div class="relative mx-auto flex h-[64px] max-w-7xl items-center justify-between gap-6 px-5 sm:px-8">
-        <button type="button" data-action="home-top" class="group flex min-w-0 items-center gap-3 text-left"
+        <a href="/" class="group flex min-w-0 items-center gap-3 text-left"
                 aria-label="Accueil — MEDITRA, Médaille et Distinctions du Travail">
           ${meditraBrand({ size: 40, sub: "République Gabonaise" })}
-        </button>
+        </a>
 
         <nav class="hidden h-full items-stretch gap-0 xl:flex" aria-label="Navigation principale">${nav}</nav>
 
@@ -881,7 +875,7 @@ function siteFooter() {
               (link) =>
                 `<li><button type="button" data-action="scroll" data-target="${link.id}" class="text-muted transition-colors hover:text-ink-900">${esc(link.label)}</button></li>`
             ).join("")}
-            <li><button type="button" data-action="nav" data-path="/login" class="font-medium text-republic-green-700 transition-colors hover:text-republic-green-600">Se connecter</button></li>
+            <li><a href="/connexion/" class="font-medium text-republic-green-700 transition-colors hover:text-republic-green-600">Se connecter</a></li>
           </ul>
         </div>
 

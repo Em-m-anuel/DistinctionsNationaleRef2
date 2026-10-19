@@ -3,42 +3,22 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="description"
-      content="MEDITRA — Médaille et Distinctions du Travail. Portail de dépôt, de suivi et d’attribution des médailles du travail de la République Gabonaise."
-    />
+    <meta name="description" content="MEDITRA — Médaille et Distinctions du Travail. Portail de dépôt, de suivi et d’attribution des médailles du travail de la République Gabonaise." />
     <meta name="theme-color" content="#102A50" />
-    <link rel="icon" href="assets/brand/meditra-favicon.svg" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="assets/brand/meditra-favicon.svg" />
+    <link rel="icon" href="/assets/brand/meditra-favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/assets/brand/meditra-favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,500;0,600;1,500&family=Sora:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,500;0,600;1,500&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <title>MEDITRA — Médaille et Distinctions du Travail</title>
-
-    <!-- Feuille de style compilée (générée depuis css/theme.css) -->
-    <link rel="stylesheet" href="css/app.css" />
-    <link rel="stylesheet" href="css/cf.css" />
-    <link rel="stylesheet" href="css/gab-orient.css" />
-    <link rel="stylesheet" href="css/meditra.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+    <link rel="stylesheet" href="/css/app.css" />
+    <link rel="stylesheet" href="/css/cf.css" />
+    <link rel="stylesheet" href="/css/gab-orient.css" />
+    <link rel="stylesheet" href="/css/meditra.css" />
+    <link rel="stylesheet" href="/css/site.css" />
+    
   </head>
-  <body>
-    <!--
-      Application mono-page en HTML / CSS / JavaScript pur.
-      Aucune dépendance runtime : pas de React, pas de bundler.
-
-      Le routage se fait par hash :
-        #/                                  → page d'accueil publique
-        #/login (#/connexion)               → connexion commune
-        #/register                          → inscription (vues et OTP côté frontend)
-        #/app/<role>/<page>                 → espace connecté (13 profils)
-                                            7 catégories : demandeur, recipient,
-                                            3 secrétariats, 3 autorités, 3 services,
-                                            régisseur, administrateur.
-    -->
+  <body class="mp-home" data-site-kind="home">
     <svg width="0" height="0" style="position:absolute" aria-hidden="true">
         <defs>
           <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></symbol>
@@ -96,47 +76,22 @@
           <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 2 2.9 6.6 7.1.7-5.4 4.7 1.6 7L12 17.3 5.8 21l1.6-7L2 9.3l7.1-.7z"/></symbol>
         </defs>
       </svg>
-
     <div id="app"></div>
     <div id="toasts" class="toast-stack go-toasts"></div>
     <div id="tip" class="tip go-tip" hidden></div>
-
-    <script src="js/icons.js"></script>
-    <script src="js/data.js"></script>
-    <script src="js/auth.js"></script>
-    <script src="js/demo-accounts.js"></script>
-    <script src="js/portal-demo.js"></script>
-    <script src="js/demo-store.js"></script>
-    <script src="js/router.js"></script>
-    <script src="js/ui.js"></script>
-    <script src="js/views/home.js"></script>
-    <script src="js/registration.js"></script>
-    <script src="js/views/login.js"></script>
-    <script src="js/views/workspace.js"></script>
-    <script src="js/views/portals.js"></script>
-    <script src="js/views/portal-extras.js"></script>
-    <script src="js/views/admin.js"></script>
-    <script src="js/views/role-pages.js"></script>
-    <script src="js/views/shared.js"></script>
-    <script src="js/cf-store.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" async onload="window.__leaflet='ok'" onerror="window.__leaflet='error'"></script>
-    <script src="js/gab-orient/data.js"></script>
-    <script src="js/gab-orient/charts.js"></script>
-    <script src="js/gab-orient/map.js"></script>
-    <script src="js/gab-orient/core.js"></script>
-    <script src="js/gab-orient/views-dossiers.js"></script>
-    <script src="js/gab-orient/views-demande.js"></script>
-    <script src="js/gab-orient/views-courriers.js"></script>
-    <script src="js/gab-orient/views-ceremonies.js"></script>
-    <script src="js/gab-orient/views-service.js"></script>
-    <script src="js/gab-orient/views-decisions.js"></script>
-    <script src="js/gab-orient/views-regie.js"></script>
-    <script src="js/gab-orient/views-admin.js"></script>
-    <script src="js/gab-orient/bridge.js"></script>
-    <script src="js/views/go-ui.js"></script>
-    <script src="js/views/go-pages.js"></script>
-    <script src="js/views/internal-portal.js"></script>
-    <script src="js/cf-app.js"></script>
-    <script src="js/app.js"></script>
+    <script src="/js/site-config.js"></script>
+    <script src="/js/icons.js"></script>
+    <script src="/js/data.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/demo-accounts.js"></script>
+    <script src="/js/portal-demo.js"></script>
+    <script src="/js/demo-store.js"></script>
+    <script src="/js/router.js"></script>
+    <script src="/js/ui.js"></script>
+    <script src="/js/views/home.js"></script>
+    <script src="/js/registration.js"></script>
+    <script src="/js/views/login.js"></script>
+    <script src="/js/site/routes.js"></script>
+    <script src="/js/app.js"></script>
   </body>
 </html>

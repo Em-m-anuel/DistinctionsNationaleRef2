@@ -45,9 +45,9 @@ function authButton(label, action, extra = '', attrs = '') {
 function authAside() {
   return `<aside class="auth-aside" aria-label="Identité du portail">
     <div class="auth-aside-art" aria-hidden="true">${homeArt('cartography', 'auth-map')}${homeArt('senate', 'auth-facade')}${homeArt('fern', 'auth-fern')}</div>
-    <button type="button" data-action="nav" data-path="/" class="auth-brand">
+    <a href="/" class="auth-brand" aria-label="MEDITRA — accueil public">
       ${meditraBrand({ size: 48, sub: "République Gabonaise" })}
-    </button>
+    </a>
     <div class="auth-aside-copy"><div class="auth-kicker">MEDITRA <span class="auth-triple"></span></div>
       <h2>Un parcours de <em>reconnaissance.</em></h2>
       <p>Un espace pour accompagner chaque étape, de la constitution du dossier à la remise des médailles du travail.</p>
@@ -113,7 +113,7 @@ function authLoginPanel() {
       </div>
       ${button({attrs:{type:'submit',id:'login-submit'},size:'lg',fullWidth:true,html:authUserIcon()+' Se connecter',className:'auth-primary'})}
     </form>
-    <div class="auth-switch">Vous n’avez pas encore de compte ? ${authButton('Créer un compte','register')}</div>
+    <div class="auth-switch">Vous n’avez pas encore de compte ? <a class="auth-link" href="/inscription/">Créer un compte</a></div>
     ${PRESENTATION_MODE ? authDemoPanel() : ''}
   </div>`;
 }
@@ -131,7 +131,7 @@ function authChoosePanel() {
     <div class="auth-profile-grid" role="group" aria-label="Choisir le type de compte">
       ${[['entreprise','building','Inscrire une entreprise','Enregistrez votre organisation pour constituer des dossiers de distinctions, suivre leur progression et gérer vos demandes.'],['personne','user','Créer mon espace personnel','Créez votre compte personnel pour retrouver vos distinctions, consulter vos cérémonies et participer à la constitution de votre dossier.']].map(([key,ico,title,description])=>`<button type="button" class="auth-profile ${authState.profile === key ? 'is-selected' : ''}" data-auth-action="profile" data-profile="${key}" aria-pressed="${authState.profile === key}"><span class="auth-profile-icon">${key === 'personne' ? authUserIcon('size-6') : icon(ico,'size-6')}</span><strong>${title}</strong><span>${description}</span><span class="auth-profile-check" aria-hidden="true">${icon('check','size-4')}</span></button>`).join('')}
     </div><div class="auth-actions">${button({size:'lg',fullWidth:true,html:'Continuer '+icon('arrowRight','size-4 auth-arrow'),attrs:{'data-auth-action':'start-profile'},className:'auth-primary'})}</div>
-    <div class="auth-switch">Déjà un compte ? ${authButton('Se connecter','login')}</div>
+    <div class="auth-switch">Déjà un compte ? <a class="auth-link" href="/connexion/">Se connecter</a></div>
   </div>`;
 }
 function authFormPanel() {
@@ -170,7 +170,7 @@ function authConfirmPanel() {
     <div class="auth-kicker">${demo?'VÉRIFICATION SIMULÉE · PRÉSENTATION':'VÉRIFICATION CONFIRMÉE PAR LE SERVICE'}</div>
     <h1>Adresse e-mail vérifiée</h1><p class="auth-lead">Votre inscription a franchi l’étape de vérification. Vous pouvez poursuivre vers votre espace.</p>
     ${demo?'<p class="auth-service-note">Cette vérification est locale et fictive. Aucun compte n’a été créé ou activé sur le serveur.</p>':'<p class="auth-service-note">La vérification du code a été confirmée. L’activation du compte et la suite de l’inscription dépendent des règles du service.</p>'}
-    <div class="auth-actions">${demo?button({html:'Explorer l’espace de démonstration '+icon('arrowRight','size-4 auth-arrow'),attrs:{'data-auth-action':'demo-open'},className:'auth-primary'}):authButton('Retour à la connexion','login')}</div>
+    <div class="auth-actions">${demo?button({html:'Explorer l’espace de démonstration '+icon('arrowRight','size-4 auth-arrow'),attrs:{'data-auth-action':'demo-open'},className:'auth-primary'}):'<a class="auth-link" href="/connexion/">Retour à la connexion</a>'}</div>
   </div>`;
 }
 
@@ -259,9 +259,9 @@ function authForgotSuccessPanel() {
   </div>`;
 }
 function loginSuccessPanel(session) {
-  const sessionRole = session.role === 'agent_administration' ? 'service'
-    : ['recipient','recipiendaire'].includes(session.role) ? 'recipient' : 'demandeur';
-  return `<div class="auth-view auth-confirm"><div class="auth-confirm-mark">${icon('checkCircle','size-8')}</div><div class="auth-kicker">ACCÈS CONFIRMÉ</div><h1>Connexion réussie</h1><p class="auth-lead">Bienvenue, ${esc(session.company)}.</p><p class="auth-masked-mail">${esc(session.email)}</p><div class="auth-actions">${button({variant:'outline',html:'Retour à l’accueil',attrs:{'data-action':'nav','data-path':'/'}})}${button({html:'Ouvrir mon espace',attrs:{'data-action':'nav','data-path':`/app/${sessionRole}/overview`}})}</div>${button({variant:'ghost',html:'Se déconnecter',attrs:{'data-action':'signout'}})}</div>`;
+  const role = session.role || 'demandeur';
+  const home = typeof workspacePath === 'function' ? workspacePath(role, 'overview') : '/';
+  return `<div class="auth-view auth-confirm"><div class="auth-confirm-mark">${icon('checkCircle','size-8')}</div><div class="auth-kicker">ACCÈS CONFIRMÉ</div><h1>Connexion réussie</h1><p class="auth-lead">Bienvenue, ${esc(session.company)}.</p><p class="auth-masked-mail">${esc(session.email)}</p><div class="auth-actions"><a class="btn btn-secondary" href="/">Retour à l’accueil</a><a class="btn btn-primary" href="${home}">Ouvrir mon espace</a></div>${button({variant:'ghost',html:'Se déconnecter',attrs:{'data-action':'signout'}})}</div>`;
 }
 function loginPanelHtml(session) {
   if (session) return loginSuccessPanel(session);
@@ -291,7 +291,7 @@ function paintLoginPanel() {
 function renderLogin(session, route = '/login') {
   if (route === '/register' && authState.view === 'login') authState.view = 'choose';
   if (route === '/login' && authState.view === 'choose') authState.view = 'login';
-  return `<div class="auth-page"><div class="auth-topline" aria-hidden="true"></div>${authAside()}<main id="contenu" class="auth-main"><div class="auth-toolbar"><button type="button" data-action="nav" data-path="/" class="auth-back">${icon('arrowLeft','size-4')} Retour à l’accueil</button><span>${icon('lock','size-4')} MEDITRA</span></div><div class="auth-main-content"><div class="auth-mobile-brand">${meditraBrand({ size: 42, sub: "République Gabonaise" })}</div><div class="auth-card" id="login-panel">${loginPanelHtml(session)}</div></div><footer class="auth-footer">© ${new Date().getFullYear()} République Gabonaise — MEDITRA</footer></main><div class="auth-toasts" id="auth-toasts" aria-label="Notifications"></div></div>`;
+  return `<div class="auth-page"><div class="auth-topline" aria-hidden="true"></div>${authAside()}<main id="contenu" class="auth-main"><div class="auth-toolbar"><a href="/" class="auth-back">${icon('arrowLeft','size-4')} Retour à l’accueil</a><span>${icon('lock','size-4')} MEDITRA</span></div><div class="auth-main-content"><div class="auth-mobile-brand">${meditraBrand({ size: 42, sub: "République Gabonaise" })}</div><div class="auth-card" id="login-panel">${loginPanelHtml(session)}</div></div><footer class="auth-footer">© ${new Date().getFullYear()} République Gabonaise — MEDITRA</footer></main><div class="auth-toasts" id="auth-toasts" aria-label="Notifications"></div></div>`;
 }
 function mountLogin() { bindLoginForm(); }
 function bindLoginForm() {
@@ -367,7 +367,10 @@ async function onLoginSubmit(event) {
   authBusy(true,'Connexion en cours…');
   const result = await signIn({email,password,remember:authState.remember});
   authBusy(false);
-  if (!result.ok) { if (result.error.field === 'email' || result.error.field === 'password') authFieldError(result.error.field,result.error.message); authToast('error',result.error.message); }
+  if (!result.ok) { if (result.error.field === 'email' || result.error.field === 'password') authFieldError(result.error.field,result.error.message); authToast('error',result.error.message); return; }
+  const next = new URLSearchParams(window.location.search).get('next');
+  const target = typeof siteAfterLoginUrl === 'function' ? siteAfterLoginUrl(result.user.role, next) : '/';
+  window.location.assign(target);
 }
 async function onRegistrationSubmit(event) {
   event.preventDefault(); if (authState.busy || !validateStep()) return;
@@ -514,7 +517,7 @@ function handleAuthAction(action,buttonEl) {
   if(action==='demo-otp' && PRESENTATION_MODE){
     resetAuthFlow();authState.profile='personne';authState.forms.personne.email='alain.moussavou@example.invalid';
     authState.preview='demo';authState.otpLength=6;authState.view='otp';
-    navigateTo('/register');paintLoginPanel();return;
+    paintLoginPanel();return;
   }
   if(action==='demo-open' && PRESENTATION_MODE && authState.preview==='demo'){
     const role=authState.profile==='entreprise'?'demandeur':'recipient';
@@ -522,12 +525,11 @@ function handleAuthAction(action,buttonEl) {
     return;
   }
   if(action==='demo-resend-error' && authState.preview==='demo'){authToast('error','Échec de renvoi simulé. Aucun e-mail n’a été envoyé.');return;}
-  if(action==='login'){resetAuthFlow();navigateTo('/login');paintLoginPanel();return;}
-  if(action==='register'){resetAuthFlow();authState.view='choose';navigateTo('/register');paintLoginPanel();return;}
+  if(action==='login'){resetAuthFlow();authState.view='login';paintLoginPanel();return;}
+  if(action==='register'){navigateTo('/inscription/');return;}
   if(action==='forgot'){
     resetAuthFlow();
     authState.view = 'forgot-email';
-    navigateTo('/login');
     paintLoginPanel();
     return;
   }
@@ -549,7 +551,7 @@ function handleAuthAction(action,buttonEl) {
     paintLoginPanel();
     return;
   }
-  if(action==='reset-to-login'){resetAuthFlow();navigateTo('/login');paintLoginPanel();return;}
+  if(action==='reset-to-login'){resetAuthFlow();authState.view='login';paintLoginPanel();return;}
   if(action==='profile'){
     authState.profile=buttonEl.dataset.profile;
     document.querySelectorAll('.auth-profile').forEach(card=>{

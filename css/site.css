@@ -1,0 +1,76 @@
+/* ==================================================================
+   css/site.css — compléments strictement nécessaires au site multipage.
+   La direction artistique reste définie par meditra.css, gab-orient.css
+   et cf.css ; cette feuille ne contient que la mécanique des pages.
+================================================================== */
+
+/* Lien d'évitement des pages métier. */
+.mp-skip {
+  position: absolute;
+  left: -9999px;
+  top: 8px;
+  z-index: 300;
+  padding: 10px 16px;
+  border-radius: 10px;
+  background: #fff;
+  color: var(--navy-900, #142d52);
+  font-weight: 600;
+  box-shadow: 0 10px 30px -18px rgba(12, 31, 58, 0.6);
+}
+.mp-skip:focus { left: 12px; }
+
+/* Menu mobile : panneau lisible posé sur un voile sombre. */
+.mobile-nav:not([hidden]) {
+  background: rgba(8, 22, 41, 0.42);
+  animation: fade-in 160ms ease-out;
+}
+.mobile-nav .mobile-nav-list {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: min(320px, 86vw);
+  background: #fff;
+  border-right: 1px solid var(--line, #e5eaf0);
+  box-shadow: 0 24px 60px -24px rgba(12, 31, 58, 0.5);
+  padding: 18px 12px;
+  overflow: auto;
+  animation: slide-in-left 220ms ease-out;
+}
+.mobile-nav-list a.is-hidden,
+.nav-item.is-hidden,
+a.is-hidden { display: none !important; }
+
+/* Entrée de menu active (menu déroulant). */
+.nav-item .dd-menu .menu-item[aria-current="page"] {
+  background: var(--green-50, #f1faf5);
+  color: var(--green-700, #007e50);
+  font-weight: 600;
+}
+
+/* État de chargement et refus d'accès. */
+.mp-loading {
+  padding: 48px 8px;
+  color: var(--muted, #5b7388);
+  font-size: 0.9rem;
+}
+.mp-denied-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+.mp-denied-actions .btn { text-decoration: none; }
+body.is-denied main#view { min-height: 50vh; }
+
+/* Les CTA de connexion sont désormais de vrais liens. */
+.auth-brand { text-decoration: none; }
+.auth-back { text-decoration: none; }
+.auth-switch .auth-link { text-decoration: none; }
+
+/* Les pages métier gardent la hauteur de la coquille historique. */
+.go-workspace { min-height: 100dvh; display: flex; flex-direction: column; }
+.go-workspace main#view { flex: 1 0 auto; width: 100%; }
+.go-workspace .site-footer { flex-shrink: 0; }
+
+/* Panneaux et visionneuses montés hors du contenu principal. */
+#mp-panel:empty,
+#mp-viewer:empty,
+#mp-confirm:empty { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .mobile-nav .mobile-nav-list { animation: none; }
+}

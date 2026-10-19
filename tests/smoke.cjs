@@ -9,7 +9,7 @@ const { execFileSync } = require('node:child_process');
 
 const root = path.resolve(__dirname, '..');
 const scripts = [
-  'js/icons.js', 'js/data.js', 'js/auth.js', 'js/demo-accounts.js', 'js/portal-demo.js', 'js/demo-store.js', 'js/router.js', 'js/ui.js',
+  'js/site-config.js', 'js/icons.js', 'js/data.js', 'js/auth.js', 'js/demo-accounts.js', 'js/portal-demo.js', 'js/demo-store.js', 'js/router.js', 'js/ui.js',
   'js/views/home.js', 'js/registration.js', 'js/views/login.js', 'js/views/workspace.js', 'js/views/portals.js', 'js/views/portal-extras.js', 'js/views/admin.js', 'js/views/role-pages.js', 'js/views/shared.js', 'js/cf-store.js',
   'js/gab-orient/data.js', 'js/gab-orient/charts.js', 'js/gab-orient/map.js', 'js/gab-orient/core.js',
   'js/gab-orient/views-dossiers.js', 'js/gab-orient/views-demande.js', 'js/gab-orient/views-courriers.js',
@@ -36,8 +36,8 @@ for (const file of scripts.slice(0, -1)) {
   const source = fs.readFileSync(path.join(root, file), 'utf8');
   vm.runInContext(source, context, { filename: file });
 }
-vm.runInContext('globalThis.expose = { renderHome, renderLogin, renderWorkspace, renderAdmin, ROLE_CONFIGS, ROLE_ORDER, SECRETARIAT_ROLES, SERVICE_ROLES, INTERNAL_ROLES, parseWorkspacePath, workspacePath, icon, medal, AUTH_STEPS, authState, authFormPanel, authOtpPanel, authForgotEmailPanel, authForgotOtpPanel, authForgotPasswordPanel, authForgotSuccessPanel, AUTH_RESET_STEPS, authResetPasswordHints, authMaskEmail, registrationOperation, signIn, DEMO_ACCOUNTS, findDemoAccount, groupDemoAccounts, INTERNAL_DEMO, internalDemoData };', context);
-const { renderHome, renderLogin, renderWorkspace, renderAdmin, ROLE_CONFIGS, ROLE_ORDER, SECRETARIAT_ROLES, SERVICE_ROLES, INTERNAL_ROLES, parseWorkspacePath, workspacePath, icon, medal, AUTH_STEPS, authState, authFormPanel, authOtpPanel, authForgotEmailPanel, authForgotOtpPanel, authForgotPasswordPanel, authForgotSuccessPanel, AUTH_RESET_STEPS, authResetPasswordHints, authMaskEmail, registrationOperation, signIn, DEMO_ACCOUNTS, findDemoAccount, groupDemoAccounts, INTERNAL_DEMO, internalDemoData } = context.expose;
+vm.runInContext('globalThis.expose = { renderHome, renderLogin, renderWorkspace, renderAdmin, ROLE_CONFIGS, ROLE_ORDER, SECRETARIAT_ROLES, SERVICE_ROLES, INTERNAL_ROLES, parseWorkspacePath, workspacePath, icon, SITE_FAMILIES, siteAllRoutes, siteCanonicalPage, medal, AUTH_STEPS, authState, authFormPanel, authOtpPanel, authForgotEmailPanel, authForgotOtpPanel, authForgotPasswordPanel, authForgotSuccessPanel, AUTH_RESET_STEPS, authResetPasswordHints, authMaskEmail, registrationOperation, signIn, DEMO_ACCOUNTS, findDemoAccount, groupDemoAccounts, INTERNAL_DEMO, internalDemoData };', context);
+const { renderHome, renderLogin, renderWorkspace, renderAdmin, ROLE_CONFIGS, ROLE_ORDER, SECRETARIAT_ROLES, SERVICE_ROLES, INTERNAL_ROLES, parseWorkspacePath, workspacePath, icon, SITE_FAMILIES, siteAllRoutes, siteCanonicalPage, medal, AUTH_STEPS, authState, authFormPanel, authOtpPanel, authForgotEmailPanel, authForgotOtpPanel, authForgotPasswordPanel, authForgotSuccessPanel, AUTH_RESET_STEPS, authResetPasswordHints, authMaskEmail, registrationOperation, signIn, DEMO_ACCOUNTS, findDemoAccount, groupDemoAccounts, INTERNAL_DEMO, internalDemoData } = context.expose;
 
 test('les fichiers JavaScript sont syntaxiquement valides', () => {
   for (const file of scripts) {
@@ -48,8 +48,18 @@ test('les fichiers JavaScript sont syntaxiquement valides', () => {
 test('la version statique est autonome au démarrage', () => {
   const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
   const css = fs.readFileSync(path.join(root, 'css/app.css'), 'utf8');
-  assert.match(html, /<link rel="stylesheet" href="css\/app\.css"/);
-  for (const file of scripts) assert.match(html, new RegExp(`<script src="${file.replaceAll('.', '\\.')}"`));
+  assert.match(html, /<link rel="stylesheet" href="\/css\/app\.css"/);
+  // La page d'accueil ne charge que ses scripts ; le shell des pages métier
+  // porte la liste complète. Chaque script doit être référencé quelque part.
+  const workspacePage = fs.readFileSync(path.join(root, 'profil/service/instruction/index.html'), 'utf8');
+  for (const file of scripts) {
+    const pattern = new RegExp(`<script src="\/?${file.replaceAll('.', '\\.')}"`);
+    assert.ok(pattern.test(html) || pattern.test(workspacePage), `${file} n'est chargé par aucune page`);
+  }
+  for (const file of scripts) {
+    if (/views\/(workspace|portals|portal-extras|admin|role-pages)/.test(file)) continue;
+    assert.match(workspacePage, new RegExp(`<script src="\/?${file.replaceAll('.', '\\.')}"`));
+  }
   assert.ok(css.length > 30_000, 'le CSS précompilé doit être livré');
   assert.match(css, /\.bg-republic-green-500/);
   assert.doesNotMatch(html, /react-dom|\/src\/main\.tsx|@vite/);
@@ -193,8 +203,10 @@ test('les huit rôles et les pages de leur navigation sont rendus', () => {
     }
     for (const page of [...new Set(pages)]) {
       const path = workspacePath(role, page);
-      assert.equal(parseWorkspacePath(path).role, role);
-      assert.equal(parseWorkspacePath(path).page, page);
+      const parsed = parseWorkspacePath(path);
+      assert.ok(parsed, `${role}/${page} : URL non reconnue (${path})`);
+      assert.ok(parsed.family, `${role}/${page} : famille manquante`);
+      assert.equal(parsed.page, siteCanonicalPage(parsed.family, page) || 'overview', `${role}/${page} → ${path}`);
       const markup = renderWorkspace(role, page);
       assert.match(markup, /data-ws-content/, role + '/' + page);
       assert.match(markup, /<h1\b/, role + '/' + page);

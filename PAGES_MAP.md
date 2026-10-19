@@ -1,5 +1,29 @@
 # Carte des pages (espaces internes)
 
+## URL multipage (source de vérité)
+
+Le site n'est plus une SPA : chaque page métier possède son propre document
+HTML et peut être ouverte, rechargée (F5) ou mise en favori directement.
+Le rôle vient de la session, jamais de l'URL.
+
+| Famille | Base | Exemple |
+| --- | --- | --- |
+| Demandeur (entreprise, ministère) | `/profil/demandeur/` | `/profil/demandeur/dossiers/` |
+| Récipiendaire | `/profil/recipiendaire/` | `/profil/recipiendaire/distinctions/` |
+| Secrétariats | `/profil/secretariat/` | `/profil/secretariat/inbox/` |
+| Direction (ministre, DGT, DR) | `/profil/direction/` | `/profil/direction/decisions/` |
+| Service des Distinctions | `/profil/service/` | `/profil/service/instruction/` |
+| Régie | `/profil/regie/` | `/profil/regie/stock/` |
+| Administration | `/administration/` | `/administration/users/` |
+
+Pages publiques : `/`, `/connexion/`, `/inscription/`.
+Alias historiques (`relances`, `withdrawals`, `waiting-pieces`…) : voir
+`MIGRATION_PLAN.md`.
+
+> Les sections ci-dessous décrivent le contenu métier des pages. Elles sont
+> conservées pour référence ; les URL qu'elles citent encore sous la forme
+> `#/app/...` sont traduites automatiquement vers la nouvelle arborescence.
+
 Les écrans métier internes sont les vues GAB-ORIENT (`js/gab-orient/views-*.js`) montées dans `#go-view` : aperçu, dossiers (tiroir `GO.openDrawer`), file d’instruction, supervision, décisions, recours, courriers (visionneuse), registre, cérémonies (`GOMap`), stats (`GOCharts`), régie, contrôle, journal. Le wizard de dépôt reste à **6** étapes. Voir `INTEGRATION_AUDIT.md`.
 
 SPA en hash `#/app/<rôle>/<page>`. Les portails **demandeur** et **récipiendaire** restent rendus par `renderPortal` (`js/views/portals.js`) : `ipNav` ne les remplace pas.
